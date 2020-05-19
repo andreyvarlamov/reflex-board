@@ -1,20 +1,46 @@
 const cards = require("express").Router();
 const comments = require("./comments");
 
+const Card = require("../../models/Card");
+const Board = require("../../models/Board");
+
 // @route GET /api/cards/
-// @desc Get All Cards in the Board
+// @desc Get All Cards
 // @access Public
 cards.get("/", (req, res) => {
   console.log("GET /api/cards/");
-  res.send("ok");
+  Card.find()
+    .then(cards => res.json(cards))
+    .catch(err => console.log(err));
 });
 
 // @route POST /api/cards
-// @desc Add a New Card in the Board
+// @desc Add a New Card
 // @access Public
 cards.post("/", (req, res) => {
   console.log("POST /api/cards/");
-  res.send("ok");
+
+  const { boardId } = req.body;
+  Board.findById(boardId)
+    .then(board => {
+      const { title, author, description } = req.body;
+      const newCard = new Card({ title, author, description, boardId });
+
+      newCard
+        .save()
+        .then(card => res.json(card))
+        .catch(err => console.log(err));
+
+      board.cards.push(newCard._id);
+
+      board
+        .save()
+        .then()
+        .catch(err => console.log(err));
+    })
+    .catch(err => {
+      res.status(400).json({ msg: "No such board id" });
+    });
 });
 
 // @route DELETE /api/cards/:cardId

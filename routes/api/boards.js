@@ -1,11 +1,15 @@
 const boards = require("express").Router();
 
+const Board = require("../../models/Board");
+
 // @route GET /api/boards
 // @desc Get All Boards
 // @access Public
 boards.get("/", (req, res) => {
   console.log("GET /api/boards");
-  res.send("ok");
+  Board.find()
+    .then(boards => res.json(boards))
+    .catch(err => console.log(err));
 });
 
 // @route GET /api/boards/:boardId
@@ -21,7 +25,12 @@ boards.get("/:boardId", (req, res) => {
 // @access Public
 boards.post("/", (req, res) => {
   console.log("POST /api/boards");
-  res.send("ok");
+  const { title } = req.body;
+  const newBoard = new Board({ title });
+  newBoard
+    .save()
+    .then(board => res.json(board))
+    .catch(err => console.log(err));
 });
 
 // @route DELETE /api/boards/:boardId
