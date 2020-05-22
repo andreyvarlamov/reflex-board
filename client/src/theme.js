@@ -14,6 +14,10 @@ const reflexTheme = createMuiTheme({
       dark: "#00247d",
       contrastText: "#ffffff",
     },
+    columnColor: "#e0e0e0",
+    cardColor: {
+      hover: "#f5f5f5",
+    },
   },
 });
 

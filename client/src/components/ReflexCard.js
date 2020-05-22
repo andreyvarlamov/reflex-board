@@ -1,5 +1,5 @@
-import React from "react";
-import { Paper, Typography } from "@material-ui/core";
+import React, { useState } from "react";
+import { Paper, Typography, Input, ClickAwayListener } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 
 const useStyles = makeStyles(theme => ({
@@ -7,24 +7,17 @@ const useStyles = makeStyles(theme => ({
     display: "flex",
     flexDirection: "column",
     padding: "0.5rem 1rem",
-    // borderColor: theme.palette.itemBorderColor,
-    // borderWidth: theme.spacing(0.1),
-    // borderStyle: "solid",
+    width: "100%",
+    overflowWrap: "break-word",
+    "&:hover": {
+      background: theme.palette.cardColor.hover,
+      cursor: "pointer",
+    },
   },
-  // textTitle: {
-  //   ...theme.custom.fontFamily.metropolis,
-  //   padding: theme.spacing(1.5, 2, 0, 2),
-  //   fontWeight: 500,
-  //   fontSize: "1rem",
-  //   color: theme.palette.text.primary,
-  //   lineHeight: theme.spacing(0.18),
-  // },
-  // barWrapper: {
-  //   display: "flex",
-  //   flexDirection: "row",
-  //   padding: theme.spacing(1, 2),
-  //   justifyContent: "space-between",
-  // },
+  cardTitle: {
+    // width: "250px",
+    lineHeight: "1.6em",
+  },
 }));
 
 function ReflexCard(props) {
@@ -35,10 +28,55 @@ function ReflexCard(props) {
   return (
     <React.Fragment>
       <Paper className={classes.wrapper}>
-        <Typography variant="subtitle1">{title}</Typography>
+        <div style={{ padding: "6px 0 7px" }}>
+          <Typography className={classes.cardTitle} variant="body1">
+            {title}
+          </Typography>
+        </div>
       </Paper>
     </React.Fragment>
   );
 }
 
-export default ReflexCard;
+function ReflexCardNew(props) {
+  const classes = useStyles();
+
+  const [title, setTitle] = useState("");
+
+  const { column, newCardCallback } = props;
+
+  const submitCard = e => {
+    e.preventDefault();
+    newCardCallback(column, title);
+  };
+
+  return (
+    <React.Fragment>
+      <ClickAwayListener onClickAway={submitCard}>
+        <Paper className={classes.wrapper}>
+          {/* TODO Fix too much padding */}
+          <form noValidate autoComplete="off" onSubmit={submitCard}>
+            <Input
+              placeholder="Enter title"
+              fullWidth
+              disableUnderline
+              autoFocus
+              value={title}
+              onChange={e => setTitle(e.target.value)}
+              multiline
+              onKeyPress={e => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  submitCard(e);
+                }
+              }}
+              style={{ lineHeight: "1.6em" }}
+            />
+          </form>
+        </Paper>
+      </ClickAwayListener>
+    </React.Fragment>
+  );
+}
+
+export { ReflexCard, ReflexCardNew };
