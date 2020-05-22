@@ -10,6 +10,7 @@ import {
 import { v4 as uuid } from "uuid";
 
 import { ReflexCard, ReflexCardNew } from "./ReflexCard";
+import CardDetailDialog from "./dialogs/CardDetailDialog";
 
 // TODO: make the canvas extend to whole screen
 const useStyles = makeStyles(theme => ({
@@ -154,18 +155,41 @@ function AppMainArea() {
       const foundIndex = board.cards.findIndex(
         foundCard => foundCard._id == card._id
       );
-      console.log(board);
       board.cards[foundIndex] = { ...board.cards[foundIndex], ...card };
-      console.log(board);
       return board;
     });
+    setChosenCard(board.cards.find(foundCard => foundCard._id === card._id));
     // Used to force update on AppMainArea when a card is edited
+    setForceUpdate(Math.random());
+  };
+
+  const [detailOpen, setDetailOpen] = useState(false);
+
+  const dummyCard = { title: "", description: "", status: 0 };
+
+  const [chosenCard, setChosenCard] = useState(dummyCard);
+
+  const handleCardClick = id => {
+    setChosenCard(board.cards.find(card => card._id === id));
+    setDetailOpen(true);
     setForceUpdate(Math.random());
   };
 
   return (
     <React.Fragment>
       {/* <Container maxWidth="xl" style={{ flexGrow: 1, marginRight: "0" }}> */}
+      <CardDetailDialog
+        open={detailOpen}
+        handleClose={() => {
+          setDetailOpen(false);
+          setChosenCard(dummyCard);
+        }}
+        card={chosenCard}
+        statusDictionary={board.statusDictionary}
+        cardEditCallback={cardEditCallback}
+        forceUpdate={forceUpdate}
+      />
+
       <Typography variant="h4" className={classes.boardTitle}>
         {board.title}
       </Typography>
@@ -181,11 +205,7 @@ function AppMainArea() {
                 .filter(card => card.status === column)
                 .map((card, index) => (
                   <div key={card._id} className={classes.cardItem}>
-                    <ReflexCard
-                      card={card}
-                      statusDictionary={board.statusDictionary}
-                      cardEditCallback={cardEditCallback}
-                    />
+                    <ReflexCard card={card} handleCardClick={handleCardClick} />
                   </div>
                 ))}
               {editing === column ? newCardComponent(column) : null}

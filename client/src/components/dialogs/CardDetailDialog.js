@@ -44,10 +44,19 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+// TODO Fix bug where select dropdown doesnt show up if there is no description
+
 function CardDetailDialog(props) {
   const classes = useStyles();
 
-  const { open, handleClose, card, statusDictionary, cardEditCallback } = props;
+  const {
+    open,
+    handleClose,
+    card,
+    statusDictionary,
+    cardEditCallback,
+    forceUpdate,
+  } = props;
 
   const initialCardEditing = {
     title: false,
@@ -62,9 +71,11 @@ function CardDetailDialog(props) {
   };
 
   useEffect(() => {
+    // console.log("CardDetailDialog use effect");
+    // console.log(initialCardData);
     setCardData(initialCardData);
     setCardEditing(initialCardEditing);
-  }, [props]);
+  }, [forceUpdate]);
 
   const [cardEditing, setCardEditing] = useState(initialCardEditing);
   const [cardData, setCardData] = useState(initialCardData);
@@ -137,7 +148,10 @@ function CardDetailDialog(props) {
           )}
           {cardEditing.status ? (
             <ClickAwayListener
-              onClickAway={handleCardSave}
+              onClickAway={() => {
+                console.log("Click away");
+                handleCardSave();
+              }}
               mouseEvent="onMouseDown"
               touchEvent="onTouchStart"
             >
@@ -171,17 +185,20 @@ function CardDetailDialog(props) {
               <em>{statusDictionary[cardData.status]}</em>
             </Typography>
           )}
-          {cardEditing.description || !cardData.description ? (
+          {cardEditing.description ? (
             <ClickAwayListener
-              onClickAway={handleCardSave}
+              onClickAway={() => {
+                console.log("Click away");
+                handleCardSave();
+              }}
               mouseEvent="onMouseDown"
               touchEvent="onTouchStart"
             >
               <Input
                 fullWidth
-                autoFocus
                 value={cardData.description}
                 multiline
+                autoFocus
                 rows="3"
                 onChange={e => {
                   const targetValue = e.target.value;
@@ -196,6 +213,15 @@ function CardDetailDialog(props) {
                 classes={{
                   input: classes.detailInput,
                 }}
+                onFocus={e => {
+                  e.preventDefault();
+                  const { target } = e;
+                  target.setSelectionRange(
+                    target.value.length,
+                    target.value.length
+                  );
+                }}
+                placeholder="Add a description..."
               ></Input>
             </ClickAwayListener>
           ) : (
@@ -209,12 +235,26 @@ function CardDetailDialog(props) {
               {cardData.description}
             </Typography>
           )}
+          {/* Show fake input if description is empty */}
+          {!cardData.description && !cardEditing.description ? (
+            <Input
+              fullWidth
+              placeholder="Add a description..."
+              multiline
+              rows="3"
+              onClick={() =>
+                setCardEditing(prev => ({ ...prev, description: true }))
+              }
+              classes={{
+                input: classes.detailInput,
+              }}
+            ></Input>
+          ) : null}
         </DialogContent>
         <DialogActions className="draggableCancel">
           <Button autoFocus onClick={handleClose}>
-            Cancel
+            Close
           </Button>
-          <Button onClick={handleClose}>Subscribe</Button>
         </DialogActions>
       </Dialog>
     </React.Fragment>

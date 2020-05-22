@@ -3,8 +3,6 @@ import { Paper, Typography, Input, ClickAwayListener } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import DescriptionIcon from "@material-ui/icons/Description";
 
-import CardDetailDialog from "./dialogs/CardDetailDialog";
-
 const useStyles = makeStyles(theme => ({
   wrapper: {
     display: "flex",
@@ -26,22 +24,14 @@ const useStyles = makeStyles(theme => ({
 function ReflexCard(props) {
   const classes = useStyles();
 
-  const [detailOpen, setDetailOpen] = useState(false);
-
-  const { card, statusDictionary, cardEditCallback } = props;
+  const { card, handleCardClick } = props;
 
   return (
     <React.Fragment>
-      <CardDetailDialog
-        open={detailOpen}
-        handleClose={() => {
-          setDetailOpen(false);
-        }}
-        card={card}
-        statusDictionary={statusDictionary}
-        cardEditCallback={cardEditCallback}
-      />
-      <Paper className={classes.wrapper} onClick={() => setDetailOpen(true)}>
+      <Paper
+        className={classes.wrapper}
+        onClick={() => handleCardClick(card._id)}
+      >
         <div style={{ padding: "6px 0 7px" }}>
           <Typography className={classes.cardTitle} variant="body1">
             {card.title}
