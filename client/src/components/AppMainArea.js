@@ -7,6 +7,8 @@ import {
   Button,
 } from "@material-ui/core";
 
+import { v4 as uuid } from "uuid";
+
 import { ReflexCard, ReflexCardNew } from "./ReflexCard";
 
 // TODO: make the canvas extend to whole screen
@@ -54,12 +56,42 @@ function AppMainArea() {
   const classes = useStyles();
 
   const cards = [
-    { title: "Start doing stuff", status: 0 },
-    { title: "Start doing other stuff", status: 0 },
-    { title: "Keep doing stuff", status: 1 },
-    { title: "Now test it", status: 2 },
-    { title: "Also test this", status: 2 },
-    { title: "And this is done", status: 3 },
+    {
+      _id: uuid(),
+      title: "Start doing stuff",
+      description: "Start doing stuff",
+      status: 0,
+    },
+    {
+      _id: uuid(),
+      title: "Start doing other stuff",
+      description: "Start doing other stuff",
+      status: 0,
+    },
+    {
+      _id: uuid(),
+      title: "Keep doing stuff",
+      description: "Keep doing stuff",
+      status: 1,
+    },
+    {
+      _id: uuid(),
+      title: "Now test it hahahahahah",
+      description: "Now test it hahahahahah",
+      status: 2,
+    },
+    {
+      _id: uuid(),
+      title: "Also test this",
+      description: "Also test this",
+      status: 2,
+    },
+    {
+      _id: uuid(),
+      title: "And this is done",
+      description: "And this is done",
+      status: 3,
+    },
   ];
 
   const initialBoard = {
@@ -81,7 +113,7 @@ function AppMainArea() {
   const newCardCallback = (column, cardTitle) => {
     if (cardTitle) {
       setBoard(board => {
-        board.cards.push({ title: cardTitle, status: column });
+        board.cards.push({ _id: uuid(), title: cardTitle, status: column });
         return board;
       });
     }
@@ -114,6 +146,23 @@ function AppMainArea() {
     </Button>
   );
 
+  // Used to force update on AppMainArea when a card is edited (map and filter on board.cards doesn't rerun and update ReflexCard prop)
+  const [forceUpdate, setForceUpdate] = useState(0);
+
+  const cardEditCallback = card => {
+    setBoard(board => {
+      const foundIndex = board.cards.findIndex(
+        foundCard => foundCard._id == card._id
+      );
+      console.log(board);
+      board.cards[foundIndex] = { ...board.cards[foundIndex], ...card };
+      console.log(board);
+      return board;
+    });
+    // Used to force update on AppMainArea when a card is edited
+    setForceUpdate(Math.random());
+  };
+
   return (
     <React.Fragment>
       {/* <Container maxWidth="xl" style={{ flexGrow: 1, marginRight: "0" }}> */}
@@ -124,15 +173,19 @@ function AppMainArea() {
       <div className={classes.cardsContainer}>
         {board.statusDictionary.map((status, column) => (
           <div key={column} className={classes.cardsColumn}>
-            <div key={column} className={classes.columnCardsContainer}>
+            <div className={classes.columnCardsContainer}>
               <Typography variant="h6" className={classes.columnTitle}>
                 {status}
               </Typography>
               {board.cards
                 .filter(card => card.status === column)
                 .map((card, index) => (
-                  <div key={index} className={classes.cardItem}>
-                    <ReflexCard title={card.title} />
+                  <div key={card._id} className={classes.cardItem}>
+                    <ReflexCard
+                      card={card}
+                      statusDictionary={board.statusDictionary}
+                      cardEditCallback={cardEditCallback}
+                    />
                   </div>
                 ))}
               {editing === column ? newCardComponent(column) : null}
