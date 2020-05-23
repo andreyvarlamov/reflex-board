@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+
 import { Paper, Typography, Input, ClickAwayListener } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import DescriptionIcon from "@material-ui/icons/Description";
@@ -11,12 +12,20 @@ const useStyles = makeStyles(theme => ({
     width: "100%",
     overflowWrap: "break-word",
     "&:hover": {
-      background: theme.palette.cardColor.hover,
+      background: theme.palette.reflexGrey.light,
       cursor: "pointer",
     },
   },
   cardTitle: {
-    // width: "250px",
+    lineHeight: "1.6em",
+  },
+  descriptionIcon: {
+    marginTop: "0.5rem",
+  },
+  contentContainer: {
+    padding: "6px 0 6px",
+  },
+  cardInput: {
     lineHeight: "1.6em",
   },
 }));
@@ -24,66 +33,80 @@ const useStyles = makeStyles(theme => ({
 function ReflexCard(props) {
   const classes = useStyles();
 
-  const { card, handleCardClick } = props;
+  const { newCard } = props;
 
-  return (
-    <React.Fragment>
+  const [title, setTitle] = useState("");
+
+  const cardComponent = () => {
+    const { card, handleCardClick } = props;
+
+    return (
       <Paper
         className={classes.wrapper}
         onClick={() => handleCardClick(card._id)}
       >
-        <div style={{ padding: "6px 0 7px" }}>
+        <div className={classes.contentContainer}>
           <Typography className={classes.cardTitle} variant="body1">
             {card.title}
           </Typography>
           {card.description ? (
-            <DescriptionIcon color="disabled" style={{ marginTop: "0.5rem" }} />
+            <DescriptionIcon
+              className={classes.descriptionIcon}
+              color="disabled"
+            />
           ) : null}
         </div>
       </Paper>
-    </React.Fragment>
-  );
-}
+    );
+  };
 
-function ReflexCardNew(props) {
-  const classes = useStyles();
+  const newCardComponent = () => {
+    const { column, newCardCallback } = props;
 
-  const [title, setTitle] = useState("");
+    const submitCard = e => {
+      e.preventDefault();
+      newCardCallback(column, title);
+    };
 
-  const { column, newCardCallback } = props;
+    const cardInputComponent = () => (
+      <Input
+        className={classes.cardInput}
+        placeholder="Enter title"
+        fullWidth
+        disableUnderline
+        autoFocus
+        value={title}
+        onChange={e => setTitle(e.target.value)}
+        multiline
+        onKeyPress={e => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            submitCard(e);
+          }
+        }}
+      />
+    );
 
-  const submitCard = e => {
-    e.preventDefault();
-    newCardCallback(column, title);
+    return (
+      <ClickAwayListener
+        onClickAway={submitCard}
+        mouseEvent="onMouseDown"
+        touchEvent="onTouchStart"
+      >
+        <Paper className={classes.wrapper}>
+          <form noValidate autoComplete="off" onSubmit={submitCard}>
+            {cardInputComponent()}
+          </form>
+        </Paper>
+      </ClickAwayListener>
+    );
   };
 
   return (
     <React.Fragment>
-      <ClickAwayListener onClickAway={submitCard}>
-        <Paper className={classes.wrapper}>
-          {/* TODO Fix too much padding */}
-          <form noValidate autoComplete="off" onSubmit={submitCard}>
-            <Input
-              placeholder="Enter title"
-              fullWidth
-              disableUnderline
-              autoFocus
-              value={title}
-              onChange={e => setTitle(e.target.value)}
-              multiline
-              onKeyPress={e => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  submitCard(e);
-                }
-              }}
-              style={{ lineHeight: "1.6em" }}
-            />
-          </form>
-        </Paper>
-      </ClickAwayListener>
+      {newCard ? newCardComponent() : cardComponent()}
     </React.Fragment>
   );
 }
 
-export { ReflexCard, ReflexCardNew };
+export default ReflexCard;

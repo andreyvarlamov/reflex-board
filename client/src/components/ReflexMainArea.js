@@ -1,18 +1,11 @@
 import React, { useState } from "react";
-import {
-  Container,
-  Grid,
-  makeStyles,
-  Typography,
-  Button,
-} from "@material-ui/core";
-
 import { v4 as uuid } from "uuid";
 
-import { ReflexCard, ReflexCardNew } from "./ReflexCard";
+import { makeStyles, Typography, Button } from "@material-ui/core";
+
+import ReflexCard from "./ReflexCard";
 import CardDetailDialog from "./dialogs/CardDetailDialog";
 
-// TODO: make the canvas extend to whole screen
 const useStyles = makeStyles(theme => ({
   // boardCanvas: {
   //   position: "relative",
@@ -37,7 +30,7 @@ const useStyles = makeStyles(theme => ({
     display: "flex",
     flexDirection: "column",
     margin: "0 0.5rem",
-    background: theme.palette.columnColor,
+    background: theme.palette.reflexGrey.main,
     borderRadius: "5px",
     padding: "0.5rem",
   },
@@ -48,14 +41,16 @@ const useStyles = makeStyles(theme => ({
     textAlign: "center",
   },
   boardTitle: {
-    margin: "2rem 0.5rem 0",
+    margin: "2rem 0.5rem 1rem",
     padding: "0 1rem",
+    fontWeight: "bold",
   },
 }));
 
-function AppMainArea() {
+function ReflexMainArea() {
   const classes = useStyles();
 
+  // TEMP LOCAL SETUP -----------------------------------------------------
   const cards = [
     {
       _id: uuid(),
@@ -96,7 +91,7 @@ function AppMainArea() {
   ];
 
   const initialBoard = {
-    title: "My Board",
+    title: "Board Title",
     cards,
     statusDictionary: [
       "To Do",
@@ -107,10 +102,19 @@ function AppMainArea() {
       "Actually Done",
     ],
   };
+  // END TEMP LOCAL SETUP -----------------------------------------------------
 
+  // States
   const [board, setBoard] = useState(initialBoard);
   const [editing, setEditing] = useState(-1);
+  // Used to force update on AppMainArea when a card is edited (map and filter on board.cards doesn't rerun and update ReflexCard prop)
+  const [forceUpdate, setForceUpdate] = useState(0);
+  const [detailOpen, setDetailOpen] = useState(false);
 
+  const dummyCard = { title: "", description: "", status: 0 };
+  const [chosenCard, setChosenCard] = useState(dummyCard);
+
+  // Callbacks
   const newCardCallback = (column, cardTitle) => {
     if (cardTitle) {
       setBoard(board => {
@@ -118,42 +122,13 @@ function AppMainArea() {
         return board;
       });
     }
-
     setEditing(-1);
   };
-
-  const newCardComponent = column => (
-    <div className={classes.cardItem}>
-      <ReflexCardNew column={column} newCardCallback={newCardCallback} />
-    </div>
-  );
-
-  const addButton = column => (
-    <Button
-      variant="outlined"
-      style={{ textAlign: "left", margin: "0.5rem 0 0" }}
-      onClick={() => setEditing(column)}
-    >
-      + Add a New Card
-    </Button>
-  );
-  const cancelButton = column => (
-    <Button
-      variant="outlined"
-      style={{ textAlign: "left", margin: "0.5rem 0 0" }}
-      onClick={() => setEditing(-1)}
-    >
-      &times; Cancel
-    </Button>
-  );
-
-  // Used to force update on AppMainArea when a card is edited (map and filter on board.cards doesn't rerun and update ReflexCard prop)
-  const [forceUpdate, setForceUpdate] = useState(0);
 
   const cardEditCallback = card => {
     setBoard(board => {
       const foundIndex = board.cards.findIndex(
-        foundCard => foundCard._id == card._id
+        foundCard => foundCard._id === card._id
       );
       board.cards[foundIndex] = { ...board.cards[foundIndex], ...card };
       return board;
@@ -163,12 +138,33 @@ function AppMainArea() {
     setForceUpdate(Math.random());
   };
 
-  const [detailOpen, setDetailOpen] = useState(false);
+  // Inner components
+  const newCardComponent = column => (
+    <div className={classes.cardItem}>
+      <ReflexCard newCard column={column} newCardCallback={newCardCallback} />
+    </div>
+  );
 
-  const dummyCard = { title: "", description: "", status: 0 };
+  const addButtonComponent = column => (
+    <Button
+      variant="outlined"
+      style={{ textAlign: "left", margin: "0.5rem 0 0" }}
+      onClick={() => setEditing(column)}
+    >
+      + Add a New Card
+    </Button>
+  );
+  const cancelButtonComponent = () => (
+    <Button
+      variant="outlined"
+      style={{ textAlign: "left", margin: "0.5rem 0 0" }}
+      onClick={() => setEditing(-1)}
+    >
+      &times; Cancel
+    </Button>
+  );
 
-  const [chosenCard, setChosenCard] = useState(dummyCard);
-
+  // Handlers
   const handleCardClick = id => {
     setChosenCard(board.cards.find(card => card._id === id));
     setDetailOpen(true);
@@ -177,7 +173,6 @@ function AppMainArea() {
 
   return (
     <React.Fragment>
-      {/* <Container maxWidth="xl" style={{ flexGrow: 1, marginRight: "0" }}> */}
       <CardDetailDialog
         open={detailOpen}
         handleClose={() => {
@@ -193,7 +188,6 @@ function AppMainArea() {
       <Typography variant="h4" className={classes.boardTitle}>
         {board.title}
       </Typography>
-      {/* <div className={classes.boardCanvas}> */}
       <div className={classes.cardsContainer}>
         {board.statusDictionary.map((status, column) => (
           <div key={column} className={classes.cardsColumn}>
@@ -209,15 +203,15 @@ function AppMainArea() {
                   </div>
                 ))}
               {editing === column ? newCardComponent(column) : null}
-              {editing !== column ? addButton(column) : cancelButton(column)}
+              {editing !== column
+                ? addButtonComponent(column)
+                : cancelButtonComponent()}
             </div>
           </div>
         ))}
       </div>
-      {/* </div> */}
-      {/* </Container> */}
     </React.Fragment>
   );
 }
 
-export default AppMainArea;
+export default ReflexMainArea;

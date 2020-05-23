@@ -26,7 +26,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function AppNavbar() {
+function ReflexNavbar() {
   const classes = useStyles();
 
   return (
@@ -56,4 +56,4 @@ function AppNavbar() {
   );
 }
 
-export default AppNavbar;
+export default ReflexNavbar;
