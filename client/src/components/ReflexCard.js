@@ -39,7 +39,6 @@ function ReflexCard(props) {
 
   const cardComponent = () => {
     const { card, handleCardClick } = props;
-
     return (
       <Paper
         className={classes.wrapper}

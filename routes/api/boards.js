@@ -6,7 +6,7 @@ const Board = require("../../models/Board");
 // @desc Get All Boards
 // @access Public
 boards.get("/", (req, res) => {
-  console.log("GET /api/boards");
+  console.log("DEBUG: GET /api/boards");
   Board.find()
     .then(boards => res.json(boards))
     .catch(err => console.log(err));
@@ -16,7 +16,7 @@ boards.get("/", (req, res) => {
 // @desc Get a Specific Board
 boards.get("/:boardId", (req, res) => {
   const boardId = req.params.boardId;
-  console.log("GET /api/boards/" + boardId);
+  console.log("DEBUG: GET /api/boards/" + boardId);
   res.send("ok");
 });
 
@@ -24,7 +24,7 @@ boards.get("/:boardId", (req, res) => {
 // @desc Add a New Board
 // @access Public
 boards.post("/", (req, res) => {
-  console.log("POST /api/boards");
+  console.log("DEBUG: POST /api/boards");
   const { title } = req.body;
   const newBoard = new Board({ title });
   newBoard
@@ -38,7 +38,7 @@ boards.post("/", (req, res) => {
 // @access Public
 boards.delete("/:boardId", (req, res) => {
   const boardId = req.params.boardId;
-  console.log("DELETE /api/boards/" + boardId);
+  console.log("DEBUG: DELETE /api/boards/" + boardId);
   res.send("ok");
 });
 

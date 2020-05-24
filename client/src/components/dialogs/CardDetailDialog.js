@@ -20,7 +20,7 @@ import DescriptionIcon from "@material-ui/icons/Description";
 
 const useStyles = makeStyles(theme => ({
   dialogTitle: {
-    cursor: "move",
+    cursor: "grab",
     borderBottomStyle: "solid",
     borderBottomWidth: "1px",
     borderBottomColor: theme.palette.reflexGrey.main,
@@ -39,7 +39,7 @@ const useStyles = makeStyles(theme => ({
     paddingTop: "20px",
   },
   dialogActions: {
-    cursor: "move",
+    cursor: "grab",
     borderTopStyle: "solid",
     borderTopWidth: "1px",
     borderTopColor: theme.palette.reflexGrey.main,
@@ -166,7 +166,6 @@ function CardDetailDialog(props) {
           fullWidth
           autoFocus
           value={inputValue}
-          // value={cardData.title}
           multiline
           rowsMax={dataField === "description" ? 15 : null}
           rows={dataField === "description" ? 3 : null}

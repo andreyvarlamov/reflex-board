@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { v4 as uuid } from "uuid";
 
 import { makeStyles, Typography, Button } from "@material-ui/core";
 
 import ReflexCard from "./ReflexCard";
 import CardDetailDialog from "./dialogs/CardDetailDialog";
+
+// Contexts
+import { BoardContext } from "../contexts";
 
 const useStyles = makeStyles(theme => ({
   // boardCanvas: {
@@ -50,62 +53,11 @@ const useStyles = makeStyles(theme => ({
 function ReflexMainArea() {
   const classes = useStyles();
 
-  // TEMP LOCAL SETUP -----------------------------------------------------
-  const cards = [
-    {
-      _id: uuid(),
-      title: "Start doing stuff",
-      description: "Start doing stuff",
-      status: 0,
-    },
-    {
-      _id: uuid(),
-      title: "Start doing other stuff",
-      description: "Start doing other stuff",
-      status: 0,
-    },
-    {
-      _id: uuid(),
-      title: "Keep doing stuff",
-      description: "Keep doing stuff",
-      status: 1,
-    },
-    {
-      _id: uuid(),
-      title: "Now test it hahahahahah",
-      description: "Now test it hahahahahah",
-      status: 2,
-    },
-    {
-      _id: uuid(),
-      title: "Also test this",
-      description: "Also test this",
-      status: 2,
-    },
-    {
-      _id: uuid(),
-      title: "And this is done",
-      description: "And this is done",
-      status: 3,
-    },
-  ];
-
-  const initialBoard = {
-    title: "Board Title",
-    cards,
-    statusDictionary: [
-      "To Do",
-      "In Progress",
-      "In Testing",
-      "Done",
-      "Super Done",
-      "Actually Done",
-    ],
-  };
-  // END TEMP LOCAL SETUP -----------------------------------------------------
+  // Contexts
+  const { board, fetchBoard } = useContext(BoardContext);
 
   // States
-  const [board, setBoard] = useState(initialBoard);
+  // const [board, setBoard] = useState(initialBoard);
   const [editing, setEditing] = useState(-1);
   // Used to force update on AppMainArea when a card is edited (map and filter on board.cards doesn't rerun and update ReflexCard prop)
   const [forceUpdate, setForceUpdate] = useState(0);
@@ -116,26 +68,40 @@ function ReflexMainArea() {
 
   // Callbacks
   const newCardCallback = (column, cardTitle) => {
-    if (cardTitle) {
-      setBoard(board => {
-        board.cards.push({ _id: uuid(), title: cardTitle, status: column });
-        return board;
-      });
-    }
-    setEditing(-1);
+    // if (cardTitle) {
+    // setBoard(board => {
+    //   board.cards.push({ _id: uuid(), title: cardTitle, status: column });
+    //   return board;
+    // });
+    //   const prevCards = board.cards;
+    //   updateBoard({
+    //     cards: prevCards.push({
+    //       _id: uuid(),
+    //       title: cardTitle,
+    //       status: column,
+    //     }),
+    //   });
+    // }
+    // setEditing(-1);
   };
 
   const cardEditCallback = card => {
-    setBoard(board => {
-      const foundIndex = board.cards.findIndex(
-        foundCard => foundCard._id === card._id
-      );
-      board.cards[foundIndex] = { ...board.cards[foundIndex], ...card };
-      return board;
-    });
-    setChosenCard(board.cards.find(foundCard => foundCard._id === card._id));
-    // Used to force update on AppMainArea when a card is edited
-    setForceUpdate(Math.random());
+    // setBoard(board => {
+    //   const foundIndex = board.cards.findIndex(
+    //     foundCard => foundCard._id === card._id
+    //   );
+    //   board.cards[foundIndex] = { ...board.cards[foundIndex], ...card };
+    //   return board;
+    // });
+    // const prevCards = board.cards;
+    // const foundIndex = prevCards.findIndex(
+    //   foundCard => foundCard._id === card._id
+    // );
+    // prevCards[foundIndex] = { ...prevCards[foundIndex], ...card };
+    // updateBoard({ cards: prevCards });
+    // setChosenCard(board.cards.find(foundCard => foundCard._id === card._id));
+    // // Used to force update on AppMainArea when a card is edited
+    // setForceUpdate(Math.random());
   };
 
   // Inner components
