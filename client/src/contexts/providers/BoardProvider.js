@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect } from "react";
+import React, { useReducer, useEffect, useState } from "react";
 import { v4 as uuid } from "uuid";
 import axios from "axios";
 
@@ -39,7 +39,7 @@ const initialCards = [
   },
   {
     _id: uuid(),
-    title: "And this is done",
+    title: "And aaaaathis is done",
     description: "And this is done",
     status: 3,
   },
@@ -66,13 +66,13 @@ const updateCards = (prevCards, updatedCard) => {
   const foundIndex = prevCards.findIndex(
     foundCard => foundCard._id === updatedCard._id
   );
-  prevCards[foundIndex] = updatedCard;
+  prevCards[foundIndex] = { ...prevCards[foundIndex], ...updatedCard };
   return prevCards;
 };
 
 // TODO implement DELETE_CARD action type
 const boardReducer = (state, action) => {
-  switch (action.types) {
+  switch (action.type) {
     case "GET_BOARD":
       return {
         ...state,
@@ -101,24 +101,45 @@ const boardReducer = (state, action) => {
         },
       };
     default:
-      throw new Error("Board Reducer: Invalid Action Type");
+      throw new Error(`Board Reducer: Invalid Action Type (${action.type})`);
   }
 };
 
 function BoardProvider(props) {
-  const [board, dispatch] = useReducer(boardReducer, initialState);
+  const [state, dispatch] = useReducer(boardReducer, initialState);
 
   const fetchBoard = () => {
-    dispatch({ type: "BOARD LOADING" });
-    dispatch({ type: "GET_BOARD", payload: board });
+    console.log("DEBUG: fetchBoard action called");
+    dispatch({ type: "BOARD_LOADING" });
+    dispatch({ type: "GET_BOARD", payload: state.board });
   };
 
+  const addCard = card => {
+    dispatch({ type: "ADD_CARD", payload: card });
+  };
+
+  const updateCard = card => {
+    dispatch({ type: "UPDATE_CARD", payload: card });
+  };
+
+  const [once, setOnce] = useState(true);
   useEffect(() => {
-    fetchBoard();
-  }, []);
+    if (once) {
+      dispatch({ type: "BOARD_LOADING" });
+      dispatch({ type: "GET_BOARD", payload: state.board });
+      setOnce(false);
+    }
+  }, [once, state]);
 
   return (
-    <BoardContext.Provider value={{ board: board, fetchBoard: fetchBoard }}>
+    <BoardContext.Provider
+      value={{
+        board: state.board,
+        fetchBoard: fetchBoard,
+        addCard: addCard,
+        updateCard: updateCard,
+      }}
+    >
       {props.children}
     </BoardContext.Provider>
   );

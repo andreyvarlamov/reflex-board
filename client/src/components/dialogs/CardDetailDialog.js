@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Draggable from "react-draggable";
 
 import {
@@ -17,6 +17,8 @@ import {
   Divider,
 } from "@material-ui/core";
 import DescriptionIcon from "@material-ui/icons/Description";
+
+import { BoardContext } from "../../contexts";
 
 const useStyles = makeStyles(theme => ({
   dialogTitle: {
@@ -117,14 +119,9 @@ function DraggablePaper(props) {
 function CardDetailDialog(props) {
   const classes = useStyles();
 
-  const {
-    open,
-    handleClose,
-    card,
-    statusDictionary,
-    cardEditCallback,
-    forceUpdate,
-  } = props;
+  const { board, updateCard, fetchBoard } = useContext(BoardContext);
+
+  const { open, handleClose, cardId } = props;
 
   const initialCardEditing = {
     title: false,
@@ -132,27 +129,39 @@ function CardDetailDialog(props) {
     status: false,
   };
 
-  const initialCardData = {
-    title: card.title,
-    description: card.description,
-    status: card.status,
-  };
-
-  // TODO get rid of this useEffect and replace it with proper solution
-  // TODO make this useeffect call handlecardsave upon changed cardData; this will also involve separating the editing close from data callback
-  useEffect(() => {
-    setCardData(initialCardData);
-    setCardEditing(initialCardEditing);
-  }, [forceUpdate]);
-
   const [cardEditing, setCardEditing] = useState(initialCardEditing);
-  const [cardData, setCardData] = useState(initialCardData);
+  const [cardData, setCardData] = useState({});
+  const [editingDone, setEditingDone] = useState(false);
+
+  useEffect(() => {
+    if (cardId !== "") {
+      setCardData(board.cards.find(foundCard => foundCard._id === cardId));
+    } else {
+      setCardData({});
+    }
+    if (editingDone) {
+      updateCard(cardData);
+      // TODO not sure if necessary; could cause unneccessary load on the server; but should be fine
+      fetchBoard();
+      setCardEditing({
+        title: false,
+        description: false,
+        status: false,
+      });
+      setEditingDone(false);
+    }
+    // TODO maybe figure out how to maintain exhaustive-deps
+    // eslint-disable-next-line
+  }, [cardId, board, editingDone]);
 
   const handleCardSave = () => {
-    if (cardData.title) {
-      cardEditCallback({ ...cardData, _id: card._id });
-      setCardEditing({ title: false, description: false, status: false });
+    if (!cardData.title) {
+      setCardData(prevData => {
+        delete prevData.title;
+        return prevData;
+      });
     }
+    setEditingDone(true);
   };
 
   const cardInput = (inputValue, inputClass, enterDisabled, dataField) => {
@@ -198,12 +207,17 @@ function CardDetailDialog(props) {
     );
   };
 
+  const closeDialog = () => {
+    setEditingDone(true);
+    handleClose();
+  };
+
   return (
     <React.Fragment>
       <Dialog
         classes={{ paper: classes.dialogPaper }}
         open={open}
-        onClose={handleClose}
+        onClose={closeDialog}
         PaperComponent={DraggablePaper}
         fullWidth
         maxWidth="sm"
@@ -235,8 +249,8 @@ function CardDetailDialog(props) {
               mouseEvent="onMouseDown"
               touchEvent="onTouchStart"
             >
-              {/* TODO open selector immediately upon click, stop editing upon closing select */}
               <Select
+                open
                 className={classes.statusSelector}
                 value={cardData.status}
                 classes={{ select: classes.selectorTextStyle }}
@@ -246,9 +260,13 @@ function CardDetailDialog(props) {
                     ...prevData,
                     status: targetValue,
                   }));
+                  handleCardSave();
+                }}
+                onClose={e => {
+                  handleCardSave();
                 }}
               >
-                {statusDictionary.map((status, index) => (
+                {board.statusDictionary.map((status, index) => (
                   <MenuItem value={index} key={index}>
                     {status}
                   </MenuItem>
@@ -260,11 +278,11 @@ function CardDetailDialog(props) {
               <Typography
                 className={classes.statusText}
                 variant="subtitle1"
-                onClick={() =>
-                  setCardEditing(prev => ({ ...prev, status: true }))
-                }
+                onClick={() => {
+                  setCardEditing(prev => ({ ...prev, status: true }));
+                }}
               >
-                {statusDictionary[cardData.status]}
+                {board.statusDictionary[cardData.status]}
               </Typography>
             </div>
           )}
@@ -312,7 +330,7 @@ function CardDetailDialog(props) {
         </DialogContent>
 
         <DialogActions className={`${classes.dialogActions} draggableHandle`}>
-          <Button className="draggableCancel" autoFocus onClick={handleClose}>
+          <Button className="draggableCancel" autoFocus onClick={closeDialog}>
             Close
           </Button>
         </DialogActions>

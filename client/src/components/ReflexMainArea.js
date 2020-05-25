@@ -1,5 +1,4 @@
 import React, { useState, useContext } from "react";
-import { v4 as uuid } from "uuid";
 
 import { makeStyles, Typography, Button } from "@material-ui/core";
 
@@ -54,63 +53,19 @@ function ReflexMainArea() {
   const classes = useStyles();
 
   // Contexts
-  const { board, fetchBoard } = useContext(BoardContext);
+  const { board } = useContext(BoardContext);
 
   // States
-  // const [board, setBoard] = useState(initialBoard);
   const [editing, setEditing] = useState(-1);
-  // Used to force update on AppMainArea when a card is edited (map and filter on board.cards doesn't rerun and update ReflexCard prop)
-  const [forceUpdate, setForceUpdate] = useState(0);
   const [detailOpen, setDetailOpen] = useState(false);
-
-  const dummyCard = { title: "", description: "", status: 0 };
-  const [chosenCard, setChosenCard] = useState(dummyCard);
-
-  // Callbacks
-  const newCardCallback = (column, cardTitle) => {
-    // if (cardTitle) {
-    // setBoard(board => {
-    //   board.cards.push({ _id: uuid(), title: cardTitle, status: column });
-    //   return board;
-    // });
-    //   const prevCards = board.cards;
-    //   updateBoard({
-    //     cards: prevCards.push({
-    //       _id: uuid(),
-    //       title: cardTitle,
-    //       status: column,
-    //     }),
-    //   });
-    // }
-    // setEditing(-1);
-  };
-
-  const cardEditCallback = card => {
-    // setBoard(board => {
-    //   const foundIndex = board.cards.findIndex(
-    //     foundCard => foundCard._id === card._id
-    //   );
-    //   board.cards[foundIndex] = { ...board.cards[foundIndex], ...card };
-    //   return board;
-    // });
-    // const prevCards = board.cards;
-    // const foundIndex = prevCards.findIndex(
-    //   foundCard => foundCard._id === card._id
-    // );
-    // prevCards[foundIndex] = { ...prevCards[foundIndex], ...card };
-    // updateBoard({ cards: prevCards });
-    // setChosenCard(board.cards.find(foundCard => foundCard._id === card._id));
-    // // Used to force update on AppMainArea when a card is edited
-    // setForceUpdate(Math.random());
-  };
+  const [chosenCardId, setChosenCardId] = useState("");
 
   // Inner components
   const newCardComponent = column => (
     <div className={classes.cardItem}>
-      <ReflexCard newCard column={column} newCardCallback={newCardCallback} />
+      <ReflexCard newCard column={column} callback={() => setEditing(-1)} />
     </div>
   );
-
   const addButtonComponent = column => (
     <Button
       variant="outlined"
@@ -132,9 +87,8 @@ function ReflexMainArea() {
 
   // Handlers
   const handleCardClick = id => {
-    setChosenCard(board.cards.find(card => card._id === id));
+    setChosenCardId(id);
     setDetailOpen(true);
-    setForceUpdate(Math.random());
   };
 
   return (
@@ -143,12 +97,9 @@ function ReflexMainArea() {
         open={detailOpen}
         handleClose={() => {
           setDetailOpen(false);
-          setChosenCard(dummyCard);
+          setChosenCardId("");
         }}
-        card={chosenCard}
-        statusDictionary={board.statusDictionary}
-        cardEditCallback={cardEditCallback}
-        forceUpdate={forceUpdate}
+        cardId={chosenCardId}
       />
 
       <Typography variant="h4" className={classes.boardTitle}>

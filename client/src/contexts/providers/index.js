@@ -1,1 +1,3 @@
-export const BoardProvider = require("./BoardProvider");
+import BoardProvider from "./BoardProvider";
+
+export { BoardProvider };
