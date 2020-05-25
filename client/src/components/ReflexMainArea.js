@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 
 import { makeStyles, Typography, Button } from "@material-ui/core";
 
@@ -53,7 +53,7 @@ function ReflexMainArea() {
   const classes = useStyles();
 
   // Contexts
-  const { board } = useContext(BoardContext);
+  const { board, loading } = useContext(BoardContext);
 
   // States
   const [editing, setEditing] = useState(-1);
@@ -93,40 +93,49 @@ function ReflexMainArea() {
 
   return (
     <React.Fragment>
-      <CardDetailDialog
-        open={detailOpen}
-        handleClose={() => {
-          setDetailOpen(false);
-          setChosenCardId("");
-        }}
-        cardId={chosenCardId}
-      />
+      {loading ? (
+        <Typography>Loading...</Typography>
+      ) : (
+        <React.Fragment>
+          <CardDetailDialog
+            open={detailOpen}
+            handleClose={() => {
+              setDetailOpen(false);
+              setChosenCardId("");
+            }}
+            cardId={chosenCardId}
+          />
 
-      <Typography variant="h4" className={classes.boardTitle}>
-        {board.title}
-      </Typography>
-      <div className={classes.cardsContainer}>
-        {board.statusDictionary.map((status, column) => (
-          <div key={column} className={classes.cardsColumn}>
-            <div className={classes.columnCardsContainer}>
-              <Typography variant="h6" className={classes.columnTitle}>
-                {status}
-              </Typography>
-              {board.cards
-                .filter(card => card.status === column)
-                .map((card, index) => (
-                  <div key={card._id} className={classes.cardItem}>
-                    <ReflexCard card={card} handleCardClick={handleCardClick} />
-                  </div>
-                ))}
-              {editing === column ? newCardComponent(column) : null}
-              {editing !== column
-                ? addButtonComponent(column)
-                : cancelButtonComponent()}
-            </div>
+          <Typography variant="h4" className={classes.boardTitle}>
+            {board.title}
+          </Typography>
+          <div className={classes.cardsContainer}>
+            {board.statusDictionary.map((status, column) => (
+              <div key={column} className={classes.cardsColumn}>
+                <div className={classes.columnCardsContainer}>
+                  <Typography variant="h6" className={classes.columnTitle}>
+                    {status}
+                  </Typography>
+                  {board.cards
+                    .filter(card => card.status === column)
+                    .map((card, index) => (
+                      <div key={card._id} className={classes.cardItem}>
+                        <ReflexCard
+                          card={card}
+                          handleCardClick={handleCardClick}
+                        />
+                      </div>
+                    ))}
+                  {editing === column ? newCardComponent(column) : null}
+                  {editing !== column
+                    ? addButtonComponent(column)
+                    : cancelButtonComponent()}
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </React.Fragment>
+      )}
     </React.Fragment>
   );
 }

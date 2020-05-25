@@ -9,7 +9,10 @@ boards.get("/", (req, res) => {
   console.log("DEBUG: GET /api/boards");
   Board.find()
     .then(boards => res.json(boards))
-    .catch(err => console.log(err));
+    .catch(err => {
+      console.log(err);
+      res.status(400).json({ msg: "Error Getting boards from DB" });
+    });
 });
 
 // @route GET /api/boards/:boardId
@@ -17,7 +20,12 @@ boards.get("/", (req, res) => {
 boards.get("/:boardId", (req, res) => {
   const boardId = req.params.boardId;
   console.log("DEBUG: GET /api/boards/" + boardId);
-  res.send("ok");
+  Board.findById(boardId)
+    .then(board => res.json(board))
+    .catch(err => {
+      console.log(err);
+      res.status(404).json({ msg: "No board with such id" });
+    });
 });
 
 // @route POST /api/boards

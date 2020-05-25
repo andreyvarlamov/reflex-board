@@ -6,61 +6,61 @@ import { BoardContext } from "..";
 
 // TEMP LOCAL SETUP -----------------------------------------------------
 
-const initialCards = [
-  {
-    _id: uuid(),
-    title: "Start doing stuff",
-    description: "Start doing stuff",
-    status: 0,
-  },
-  {
-    _id: uuid(),
-    title: "Start doing other stuff",
-    description: "Start doing other stuff",
-    status: 0,
-  },
-  {
-    _id: uuid(),
-    title: "Keep doing stuff",
-    description: "Keep doing stuff",
-    status: 1,
-  },
-  {
-    _id: uuid(),
-    title: "Now test it hahahahahah",
-    description: "Now test it hahahahahah",
-    status: 2,
-  },
-  {
-    _id: uuid(),
-    title: "Also test this",
-    description: "Also test this",
-    status: 2,
-  },
-  {
-    _id: uuid(),
-    title: "And aaaaathis is done",
-    description: "And this is done",
-    status: 3,
-  },
-];
+// const initialCards = [
+//   {
+//     _id: uuid(),
+//     title: "Start doing stuff",
+//     description: "Start doing stuff",
+//     status: 0,
+//   },
+//   {
+//     _id: uuid(),
+//     title: "Start doing other stuff",
+//     description: "Start doing other stuff",
+//     status: 0,
+//   },
+//   {
+//     _id: uuid(),
+//     title: "Keep doing stuff",
+//     description: "Keep doing stuff",
+//     status: 1,
+//   },
+//   {
+//     _id: uuid(),
+//     title: "Now test it hahahahahah",
+//     description: "Now test it hahahahahah",
+//     status: 2,
+//   },
+//   {
+//     _id: uuid(),
+//     title: "Also test this",
+//     description: "Also test this",
+//     status: 2,
+//   },
+//   {
+//     _id: uuid(),
+//     title: "And aaaaathis is done",
+//     description: "And this is done",
+//     status: 3,
+//   },
+// ];
 
-const initialBoard = {
-  title: "Board Title",
-  cards: initialCards,
-  statusDictionary: [
-    "To Do",
-    "In Progress",
-    "In Testing",
-    "Done",
-    "Super Done",
-    "Actually Done",
-  ],
-};
+// const initialBoard = {
+//   title: "Board Title",
+//   cards: initialCards,
+//   statusDictionary: [
+//     "To Do",
+//     "In Progress",
+//     "In Testing",
+//     "Done",
+//     "Super Done",
+//     "Actually Done",
+//   ],
+// };
 
 // END TEMP LOCAL SETUP -----------------------------------------------------
 
-const initialState = { board: initialBoard, loading: false };
+const initialState = { board: {}, loading: true };
 
 const updateCards = (prevCards, updatedCard) => {
   const foundIndex = prevCards.findIndex(
@@ -108,10 +108,16 @@ const boardReducer = (state, action) => {
 function BoardProvider(props) {
   const [state, dispatch] = useReducer(boardReducer, initialState);
 
+  //TEMP
+  const boardId = "5ec35ca37ce40e6643243748";
+
   const fetchBoard = () => {
     console.log("DEBUG: fetchBoard action called");
     dispatch({ type: "BOARD_LOADING" });
-    dispatch({ type: "GET_BOARD", payload: state.board });
+    axios
+      .get("/api/" + boardId)
+      .then(res => dispatch({ type: "GET_BOARD", payload: res.data }))
+      .catch(err => console.log(err));
   };
 
   const addCard = card => {
@@ -126,7 +132,11 @@ function BoardProvider(props) {
   useEffect(() => {
     if (once) {
       dispatch({ type: "BOARD_LOADING" });
-      dispatch({ type: "GET_BOARD", payload: state.board });
+      console.log("DEBUG: Calling axios: /api/" + boardId);
+      axios
+        .get("/api/" + boardId)
+        .then(res => dispatch({ type: "GET_BOARD", payload: res.data }))
+        .catch(err => console.log(err));
       setOnce(false);
     }
   }, [once, state]);
@@ -138,6 +148,7 @@ function BoardProvider(props) {
         fetchBoard: fetchBoard,
         addCard: addCard,
         updateCard: updateCard,
+        loading: state.loading,
       }}
     >
       {props.children}
