@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 
 import { Paper, Typography, Input, ClickAwayListener } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import DescriptionIcon from "@material-ui/icons/Description";
+
+import { BoardContext } from "../contexts";
 
 const useStyles = makeStyles(theme => ({
   wrapper: {
@@ -37,9 +39,10 @@ function ReflexCard(props) {
 
   const [title, setTitle] = useState("");
 
+  const { addCard } = useContext(BoardContext);
+
   const cardComponent = () => {
     const { card, handleCardClick } = props;
-
     return (
       <Paper
         className={classes.wrapper}
@@ -61,11 +64,16 @@ function ReflexCard(props) {
   };
 
   const newCardComponent = () => {
-    const { column, newCardCallback } = props;
+    const { column, callback } = props;
 
-    const submitCard = e => {
-      e.preventDefault();
-      newCardCallback(column, title);
+    const submitCard = () => {
+      if (title !== "") {
+        addCard({
+          status: column,
+          title,
+        });
+        callback();
+      }
     };
 
     const cardInputComponent = () => (
@@ -81,7 +89,7 @@ function ReflexCard(props) {
         onKeyPress={e => {
           if (e.key === "Enter") {
             e.preventDefault();
-            submitCard(e);
+            submitCard();
           }
         }}
       />
@@ -94,7 +102,7 @@ function ReflexCard(props) {
         touchEvent="onTouchStart"
       >
         <Paper className={classes.wrapper}>
-          <form noValidate autoComplete="off" onSubmit={submitCard}>
+          <form noValidate autoComplete="off">
             {cardInputComponent()}
           </form>
         </Paper>

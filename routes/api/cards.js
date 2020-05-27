@@ -8,7 +8,7 @@ const Board = require("../../models/Board");
 // @desc Get All Cards
 // @access Public
 cards.get("/", (req, res) => {
-  console.log("GET /api/cards/");
+  console.log("DEBUG: GET /api/cards/");
   Card.find()
     .then(cards => res.json(cards))
     .catch(err => console.log(err));
@@ -18,13 +18,13 @@ cards.get("/", (req, res) => {
 // @desc Add a New Card
 // @access Public
 cards.post("/", (req, res) => {
-  console.log("POST /api/cards/");
+  console.log("DEBUG: POST /api/cards/");
 
   const { boardId } = req.body;
   Board.findById(boardId)
     .then(board => {
-      const { title, author, description } = req.body;
-      const newCard = new Card({ title, author, description, boardId });
+      const { title, status, author, description } = req.body;
+      const newCard = new Card({ title, status, author, description, boardId });
 
       newCard
         .save()
@@ -43,12 +43,37 @@ cards.post("/", (req, res) => {
     });
 });
 
+// @route PATCH /api/cards/:cardId
+// @desc Update a Card
+// @access Public
+cards.patch("/:cardId", (req, res) => {
+  const cardId = req.params.cardId;
+  console.log("DEBUG: PATCH /api/cards/" + cardId);
+
+  const newCard = req.body;
+  delete newCard._id;
+
+  Card.updateOne({ _id: cardId }, newCard)
+    .then()
+    .catch(err => console.log(err));
+
+  Card.findById(cardId)
+    .then(card => {
+      res.json(card);
+    })
+    .catch(err => {
+      res
+        .status(400)
+        .json({ msg: "Error: " + err + "| No such card id" + cardId });
+    });
+});
+
 // @route DELETE /api/cards/:cardId
 // @desc Delete a Card
 // @access Public
 cards.delete("/:cardId", (req, res) => {
   const cardId = req.params.cardId;
-  console.log("DELETE /api/cards/" + cardId);
+  console.log("DEBUG: DELETE /api/cards/" + cardId);
   res.send("ok");
 });
 

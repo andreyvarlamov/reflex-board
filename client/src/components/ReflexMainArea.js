@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { v4 as uuid } from "uuid";
 
 import { makeStyles, Typography, Button } from "@material-ui/core";
 
 import ReflexCard from "./ReflexCard";
 import CardDetailDialog from "./dialogs/CardDetailDialog";
+
+// Contexts
+import { BoardContext } from "../contexts";
 
 const useStyles = makeStyles(theme => ({
   // boardCanvas: {
@@ -50,101 +53,20 @@ const useStyles = makeStyles(theme => ({
 function ReflexMainArea() {
   const classes = useStyles();
 
-  // TEMP LOCAL SETUP -----------------------------------------------------
-  const cards = [
-    {
-      _id: uuid(),
-      title: "Start doing stuff",
-      description: "Start doing stuff",
-      status: 0,
-    },
-    {
-      _id: uuid(),
-      title: "Start doing other stuff",
-      description: "Start doing other stuff",
-      status: 0,
-    },
-    {
-      _id: uuid(),
-      title: "Keep doing stuff",
-      description: "Keep doing stuff",
-      status: 1,
-    },
-    {
-      _id: uuid(),
-      title: "Now test it hahahahahah",
-      description: "Now test it hahahahahah",
-      status: 2,
-    },
-    {
-      _id: uuid(),
-      title: "Also test this",
-      description: "Also test this",
-      status: 2,
-    },
-    {
-      _id: uuid(),
-      title: "And this is done",
-      description: "And this is done",
-      status: 3,
-    },
-  ];
-
-  const initialBoard = {
-    title: "Board Title",
-    cards,
-    statusDictionary: [
-      "To Do",
-      "In Progress",
-      "In Testing",
-      "Done",
-      "Super Done",
-      "Actually Done",
-    ],
-  };
-  // END TEMP LOCAL SETUP -----------------------------------------------------
+  // Contexts
+  const { board, loading } = useContext(BoardContext);
 
   // States
-  const [board, setBoard] = useState(initialBoard);
   const [editing, setEditing] = useState(-1);
-  // Used to force update on AppMainArea when a card is edited (map and filter on board.cards doesn't rerun and update ReflexCard prop)
-  const [forceUpdate, setForceUpdate] = useState(0);
   const [detailOpen, setDetailOpen] = useState(false);
-
-  const dummyCard = { title: "", description: "", status: 0 };
-  const [chosenCard, setChosenCard] = useState(dummyCard);
-
-  // Callbacks
-  const newCardCallback = (column, cardTitle) => {
-    if (cardTitle) {
-      setBoard(board => {
-        board.cards.push({ _id: uuid(), title: cardTitle, status: column });
-        return board;
-      });
-    }
-    setEditing(-1);
-  };
-
-  const cardEditCallback = card => {
-    setBoard(board => {
-      const foundIndex = board.cards.findIndex(
-        foundCard => foundCard._id === card._id
-      );
-      board.cards[foundIndex] = { ...board.cards[foundIndex], ...card };
-      return board;
-    });
-    setChosenCard(board.cards.find(foundCard => foundCard._id === card._id));
-    // Used to force update on AppMainArea when a card is edited
-    setForceUpdate(Math.random());
-  };
+  const [chosenCardId, setChosenCardId] = useState("");
 
   // Inner components
   const newCardComponent = column => (
     <div className={classes.cardItem}>
-      <ReflexCard newCard column={column} newCardCallback={newCardCallback} />
+      <ReflexCard newCard column={column} callback={() => setEditing(-1)} />
     </div>
   );
-
   const addButtonComponent = column => (
     <Button
       variant="outlined"
@@ -166,50 +88,55 @@ function ReflexMainArea() {
 
   // Handlers
   const handleCardClick = id => {
-    setChosenCard(board.cards.find(card => card._id === id));
+    setChosenCardId(id);
     setDetailOpen(true);
-    setForceUpdate(Math.random());
   };
 
   return (
     <React.Fragment>
-      <CardDetailDialog
-        open={detailOpen}
-        handleClose={() => {
-          setDetailOpen(false);
-          setChosenCard(dummyCard);
-        }}
-        card={chosenCard}
-        statusDictionary={board.statusDictionary}
-        cardEditCallback={cardEditCallback}
-        forceUpdate={forceUpdate}
-      />
+      {loading ? (
+        <Typography>Loading...</Typography>
+      ) : (
+        <React.Fragment>
+          <CardDetailDialog
+            open={detailOpen}
+            handleClose={() => {
+              setDetailOpen(false);
+              setChosenCardId("");
+            }}
+            cardId={chosenCardId}
+          />
 
-      <Typography variant="h4" className={classes.boardTitle}>
-        {board.title}
-      </Typography>
-      <div className={classes.cardsContainer}>
-        {board.statusDictionary.map((status, column) => (
-          <div key={column} className={classes.cardsColumn}>
-            <div className={classes.columnCardsContainer}>
-              <Typography variant="h6" className={classes.columnTitle}>
-                {status}
-              </Typography>
-              {board.cards
-                .filter(card => card.status === column)
-                .map((card, index) => (
-                  <div key={card._id} className={classes.cardItem}>
-                    <ReflexCard card={card} handleCardClick={handleCardClick} />
-                  </div>
-                ))}
-              {editing === column ? newCardComponent(column) : null}
-              {editing !== column
-                ? addButtonComponent(column)
-                : cancelButtonComponent()}
-            </div>
+          <Typography variant="h4" className={classes.boardTitle}>
+            {board.title}
+          </Typography>
+          <div className={classes.cardsContainer}>
+            {board.statusDictionary.map((status, column) => (
+              <div key={column} className={classes.cardsColumn}>
+                <div className={classes.columnCardsContainer}>
+                  <Typography variant="h6" className={classes.columnTitle}>
+                    {status}
+                  </Typography>
+                  {board.cards
+                    .filter(card => card.status === column)
+                    .map((card, index) => (
+                      <div key={uuid()} className={classes.cardItem}>
+                        <ReflexCard
+                          card={card}
+                          handleCardClick={handleCardClick}
+                        />
+                      </div>
+                    ))}
+                  {editing === column ? newCardComponent(column) : null}
+                  {editing !== column
+                    ? addButtonComponent(column)
+                    : cancelButtonComponent()}
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </React.Fragment>
+      )}
     </React.Fragment>
   );
 }

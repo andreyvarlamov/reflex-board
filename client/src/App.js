@@ -1,20 +1,27 @@
 import React from "react";
-import "./App.css";
 
+// material ui stuff
+import { CssBaseline, ThemeProvider } from "@material-ui/core";
+
+// themes
+import { reflex } from "./theme";
+
+// components
 import ReflexNavbar from "./components/ReflexNavbar";
 import ReflexMainArea from "./components/ReflexMainArea";
-import { CssBaseline, ThemeProvider } from "@material-ui/core";
-import { reflex } from "./theme";
+
+// Context Providers
+import { BoardProvider } from "./contexts/providers";
 
 function App() {
   return (
     <div className="App">
       <CssBaseline />
       <ThemeProvider theme={reflex}>
-        {/* <div style={{ display: "flex", flexDirection: "column" }}> */}
-        <ReflexNavbar />
-        <ReflexMainArea />
-        {/* </div> */}
+        <BoardProvider>
+          <ReflexNavbar />
+          <ReflexMainArea />
+        </BoardProvider>
       </ThemeProvider>
     </div>
   );

@@ -8,7 +8,7 @@ const Card = require("../../models/Card");
 // @access Public
 comments.get("/", (req, res) => {
   const cardId = req.params.cardId;
-  console.log("GET /cards/" + cardId + "/comments");
+  console.log("DEBUG: GET /cards/" + cardId + "/comments");
   Card.findById(cardId)
     .populate("comments")
     .then(card => {
@@ -22,7 +22,7 @@ comments.get("/", (req, res) => {
 // @access Public
 comments.post("/", (req, res) => {
   const cardId = req.params.cardId;
-  console.log("POST /cards/" + cardId + "/comments");
+  console.log("DEBUG: POST /cards/" + cardId + "/comments");
   Card.findById(cardId)
     .then(card => {
       const { body, author } = req.body;
@@ -49,7 +49,7 @@ comments.post("/", (req, res) => {
 comments.delete("/:commentId", (req, res) => {
   const cardId = req.params.cardId;
   const commentId = req.params.commentId;
-  console.log("DELETE /cards/" + cardId + "/comments/" + commentId);
+  console.log("DEBUG: DELETE /cards/" + cardId + "/comments/" + commentId);
   res.send("ok");
 });
 
