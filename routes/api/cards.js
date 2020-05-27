@@ -23,8 +23,8 @@ cards.post("/", (req, res) => {
   const { boardId } = req.body;
   Board.findById(boardId)
     .then(board => {
-      const { title, author, description } = req.body;
-      const newCard = new Card({ title, author, description, boardId });
+      const { title, status, author, description } = req.body;
+      const newCard = new Card({ title, status, author, description, boardId });
 
       newCard
         .save()
@@ -46,10 +46,26 @@ cards.post("/", (req, res) => {
 // @route PATCH /api/cards/:cardId
 // @desc Update a Card
 // @access Public
-cards.patch(":/cardId", (req, res) => {
+cards.patch("/:cardId", (req, res) => {
   const cardId = req.params.cardId;
   console.log("DEBUG: PATCH /api/cards/" + cardId);
-  res.send("ok");
+
+  const newCard = req.body;
+  delete newCard._id;
+
+  Card.updateOne({ _id: cardId }, newCard)
+    .then()
+    .catch(err => console.log(err));
+
+  Card.findById(cardId)
+    .then(card => {
+      res.json(card);
+    })
+    .catch(err => {
+      res
+        .status(400)
+        .json({ msg: "Error: " + err + "| No such card id" + cardId });
+    });
 });
 
 // @route DELETE /api/cards/:cardId

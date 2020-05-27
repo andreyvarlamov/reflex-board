@@ -1,4 +1,5 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext } from "react";
+import { v4 as uuid } from "uuid";
 
 import { makeStyles, Typography, Button } from "@material-ui/core";
 
@@ -119,7 +120,7 @@ function ReflexMainArea() {
                   {board.cards
                     .filter(card => card.status === column)
                     .map((card, index) => (
-                      <div key={card._id} className={classes.cardItem}>
+                      <div key={uuid()} className={classes.cardItem}>
                         <ReflexCard
                           card={card}
                           handleCardClick={handleCardClick}

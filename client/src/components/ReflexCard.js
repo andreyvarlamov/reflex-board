@@ -1,5 +1,4 @@
 import React, { useState, useContext } from "react";
-import { v4 as uuid } from "uuid";
 
 import { Paper, Typography, Input, ClickAwayListener } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
@@ -70,7 +69,6 @@ function ReflexCard(props) {
     const submitCard = () => {
       if (title !== "") {
         addCard({
-          _id: uuid(),
           status: column,
           title,
         });

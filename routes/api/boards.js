@@ -21,6 +21,7 @@ boards.get("/:boardId", (req, res) => {
   const boardId = req.params.boardId;
   console.log("DEBUG: GET /api/boards/" + boardId);
   Board.findById(boardId)
+    .populate("cards")
     .then(board => res.json(board))
     .catch(err => {
       console.log(err);

@@ -119,7 +119,7 @@ function DraggablePaper(props) {
 function CardDetailDialog(props) {
   const classes = useStyles();
 
-  const { board, updateCard, fetchBoard } = useContext(BoardContext);
+  const { board, updateCard } = useContext(BoardContext);
 
   const { open, handleClose, cardId } = props;
 
@@ -132,17 +132,28 @@ function CardDetailDialog(props) {
   const [cardEditing, setCardEditing] = useState(initialCardEditing);
   const [cardData, setCardData] = useState({});
   const [editingDone, setEditingDone] = useState(false);
+  const [justOpened, setJustOpened] = useState(true);
+  const [once, setOnce] = useState(true);
+  //
 
   useEffect(() => {
-    if (cardId !== "") {
-      setCardData(board.cards.find(foundCard => foundCard._id === cardId));
-    } else {
-      setCardData({});
+    if (open && once) {
+      setJustOpened(true);
+      setOnce(false);
+    }
+
+    if (justOpened) {
+      if (cardId !== "") {
+        setCardData(board.cards.find(foundCard => foundCard._id === cardId));
+      } else {
+        setCardData({});
+      }
+      setJustOpened(false);
     }
     if (editingDone) {
       updateCard(cardData);
       // TODO not sure if necessary; could cause unneccessary load on the server; but should be fine
-      fetchBoard();
+      // fetchBoard();
       setCardEditing({
         title: false,
         description: false,
@@ -152,7 +163,7 @@ function CardDetailDialog(props) {
     }
     // TODO maybe figure out how to maintain exhaustive-deps
     // eslint-disable-next-line
-  }, [cardId, board, editingDone]);
+  }, [cardId, board, editingDone, justOpened, once]);
 
   const handleCardSave = () => {
     if (!cardData.title) {
@@ -210,6 +221,7 @@ function CardDetailDialog(props) {
   const closeDialog = () => {
     setEditingDone(true);
     handleClose();
+    setOnce(true);
   };
 
   return (
