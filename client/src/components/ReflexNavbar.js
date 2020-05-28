@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useLocation, Link } from "react-router-dom";
+
 import {
   AppBar,
   Toolbar,
   Typography,
   Button,
-  IconButton,
   makeStyles,
 } from "@material-ui/core";
 import { Menu as MenuIcon } from "@material-ui/icons";
@@ -24,32 +25,37 @@ const useStyles = makeStyles(theme => ({
       display: "block",
     },
   },
+  loginLink: {
+    textDecoration: "none",
+    color: theme.palette.text.primary,
+  },
 }));
 
 function ReflexNavbar() {
   const classes = useStyles();
 
+  const location = useLocation();
+
   return (
     <div className={classes.root}>
       <AppBar position="static" color="transparent">
         <Toolbar>
-          <IconButton
-            edge="start"
-            className={classes.menuButton}
-            color="inherit"
-            aria-label="menu"
-          >
-            <MenuIcon />
-          </IconButton>
-          <img
-            className={classes.logo}
-            src={window.location.origin + "/reflex-logo.png"}
-            alt="logo"
-          />
+          <Link to="/">
+            <img
+              className={classes.logo}
+              src={window.location.origin + "/reflex-logo.png"}
+              alt="logo"
+            />
+          </Link>
           <Typography variant="h6" className={classes.title}>
             Reflex
           </Typography>
-          <Button color="inherit">Test</Button>
+
+          {location.pathname === "/" ? (
+            <Link to="/login" className={classes.loginLink}>
+              <Button color="inherit">Login</Button>
+            </Link>
+          ) : null}
         </Toolbar>
       </AppBar>
     </div>

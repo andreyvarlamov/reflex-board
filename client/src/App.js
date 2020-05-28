@@ -1,4 +1,5 @@
 import React from "react";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 // material ui stuff
 import { CssBaseline, ThemeProvider } from "@material-ui/core";
@@ -9,6 +10,8 @@ import { reflex } from "./theme";
 // components
 import ReflexNavbar from "./components/ReflexNavbar";
 import ReflexMainArea from "./components/ReflexMainArea";
+import Login from "./components/pages/Login";
+import Register from "./components/pages/Register";
 
 // Context Providers
 import { BoardProvider } from "./contexts/providers";
@@ -18,10 +21,22 @@ function App() {
     <div className="App">
       <CssBaseline />
       <ThemeProvider theme={reflex}>
-        <BoardProvider>
-          <ReflexNavbar />
-          <ReflexMainArea />
-        </BoardProvider>
+        <Router>
+          <BoardProvider>
+            <ReflexNavbar />
+            <Switch>
+              <Route path="/login">
+                <Login />
+              </Route>
+              <Route path="/register">
+                <Register />
+              </Route>
+              <Route path="/">
+                <ReflexMainArea />
+              </Route>
+            </Switch>
+          </BoardProvider>
+        </Router>
       </ThemeProvider>
     </div>
   );
