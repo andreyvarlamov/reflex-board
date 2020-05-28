@@ -10,6 +10,7 @@ import {
   UPDATE_CARD,
   ADD_CARD_LOCAL,
   UPDATE_CARD_LOCAL,
+  DELETE_CARD,
 } from "../actions";
 import BoardReducer from "../reducers/BoardReducer";
 
@@ -35,7 +36,6 @@ function BoardProvider(props) {
 
   const addCard = card => {
     dispatch({ type: ADD_CARD_LOCAL, payload: card });
-    console.log(state.board);
     const { title, status } = card;
     axios
       .post("/api/cards", { title, status, boardId })
@@ -45,12 +45,18 @@ function BoardProvider(props) {
 
   const updateCard = card => {
     dispatch({ type: UPDATE_CARD_LOCAL, payload: card });
-    console.log(state.board);
     const cardId = card._id;
     axios
       .patch("/api/cards/" + cardId, card)
       .then(res => dispatch({ type: UPDATE_CARD, payload: res.data }))
       .catch(err => console.log("ERR: " + err));
+  };
+
+  const deleteCard = cardId => {
+    axios.delete("/api/cards/" + cardId).then(res => {
+      if (res.data.success) dispatch({ type: DELETE_CARD, payload: cardId });
+      else throw new Error("Error when deleting a card. Reload the page");
+    });
   };
 
   const [once, setOnce] = useState(true);
@@ -73,6 +79,7 @@ function BoardProvider(props) {
         fetchBoard: fetchBoard,
         addCard: addCard,
         updateCard: updateCard,
+        deleteCard: deleteCard,
       }}
     >
       {props.children}

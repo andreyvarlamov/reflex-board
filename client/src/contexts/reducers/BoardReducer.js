@@ -5,6 +5,7 @@ import {
   UPDATE_CARD,
   ADD_CARD_LOCAL,
   UPDATE_CARD_LOCAL,
+  DELETE_CARD,
 } from "../actions";
 
 const updateCards = (prevCards, updatedCard) => {
@@ -15,7 +16,6 @@ const updateCards = (prevCards, updatedCard) => {
   return prevCards;
 };
 
-// TODO implement DELETE_CARD action type
 export default (state, action) => {
   switch (action.type) {
     case GET_BOARD:
@@ -52,6 +52,16 @@ export default (state, action) => {
         prevBoard: {
           ...state.prevBoard,
           cards: updateCards(state.prevBoard.cards, action.payload),
+        },
+      };
+    case DELETE_CARD:
+      return {
+        ...state,
+        board: {
+          ...state.board,
+          cards: state.board.cards.filter(
+            foundCard => foundCard._id !== action.payload
+          ),
         },
       };
     case ADD_CARD_LOCAL:

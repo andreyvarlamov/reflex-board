@@ -39,6 +39,7 @@ const useStyles = makeStyles(theme => ({
   },
   dialogContent: {
     paddingTop: "20px",
+    position: "relative",
   },
   dialogActions: {
     cursor: "grab",
@@ -103,6 +104,13 @@ const useStyles = makeStyles(theme => ({
     marginTop: "0.5rem",
     marginBottom: "1rem",
   },
+  deleteButton: {
+    backgroundColor: theme.palette.danger,
+    color: theme.palette.reflexGrey.light,
+    position: "absolute",
+    bottom: "0.2rem",
+    right: "1rem",
+  },
 }));
 
 function DraggablePaper(props) {
@@ -119,7 +127,7 @@ function DraggablePaper(props) {
 function CardDetailDialog(props) {
   const classes = useStyles();
 
-  const { board, updateCard } = useContext(BoardContext);
+  const { board, updateCard, deleteCard } = useContext(BoardContext);
 
   const { open, handleClose, cardId } = props;
 
@@ -152,8 +160,6 @@ function CardDetailDialog(props) {
     }
     if (editingDone) {
       updateCard(cardData);
-      // TODO not sure if necessary; could cause unneccessary load on the server; but should be fine
-      // fetchBoard();
       setCardEditing({
         title: false,
         description: false,
@@ -339,6 +345,17 @@ function CardDetailDialog(props) {
               }}
             ></Input>
           ) : null}
+          {/* Delete Button */}
+          <Button
+            onClick={() => {
+              deleteCard(cardData._id);
+              closeDialog();
+            }}
+            className={classes.deleteButton}
+            variant="contained"
+          >
+            &times; Delete Card
+          </Button>
         </DialogContent>
 
         <DialogActions className={`${classes.dialogActions} draggableHandle`}>

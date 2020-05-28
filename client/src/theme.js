@@ -18,6 +18,7 @@ const reflexTheme = createMuiTheme({
       main: "#e0e0e0",
       light: "#f5f5f5",
     },
+    danger: "#ff5252",
   },
 });
 

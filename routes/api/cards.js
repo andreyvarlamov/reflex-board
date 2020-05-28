@@ -62,9 +62,7 @@ cards.patch("/:cardId", (req, res) => {
       res.json(card);
     })
     .catch(err => {
-      res
-        .status(400)
-        .json({ msg: "Error: " + err + "| No such card id" + cardId });
+      res.status(400).json({ msg: "No such card id: " + cardId });
     });
 });
 
@@ -74,7 +72,23 @@ cards.patch("/:cardId", (req, res) => {
 cards.delete("/:cardId", (req, res) => {
   const cardId = req.params.cardId;
   console.log("DEBUG: DELETE /api/cards/" + cardId);
-  res.send("ok");
+
+  Card.findById(cardId)
+    .then(card => {
+      Board.findById(card.boardId)
+        .then(board => {
+          board.cards = board.cards.filter(
+            foundCardId => foundCardId.toString() !== cardId
+          );
+          board.save();
+        })
+        .catch(err => console.log(err));
+
+      card.remove().then(() => res.json({ success: true }));
+    })
+    .catch(err => res.status(404).json({ success: false }));
+
+  Card.deleteOne({ _id: cardId });
 });
 
 // redirect /api/cards/:cardId/comments
