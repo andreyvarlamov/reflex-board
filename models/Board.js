@@ -17,6 +17,10 @@ const BoardSchema = new Schema(
       type: [String],
       default: ["To Do", "In Progress", "In Testing", "Done"],
     },
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
   },
   { timestamps: true }
 );
