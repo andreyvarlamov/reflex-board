@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 
 import {
@@ -14,6 +14,10 @@ import {
 } from "@material-ui/core";
 
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
+
+import { ErrorContext } from "../../contexts";
+
+import ErrorDisplay from "../ErrorDisplay";
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -38,6 +42,8 @@ const useStyles = makeStyles(theme => ({
 function Login() {
   const classes = useStyles();
 
+  const { msg, status, id } = useContext(ErrorContext);
+
   return (
     <div>
       <Container component="main" maxWidth="xs">
@@ -49,6 +55,7 @@ function Login() {
             Login
           </Typography>
           <form className={classes.form} noValidate>
+            <ErrorDisplay />
             <TextField
               variant="outlined"
               margin="normal"
@@ -81,11 +88,11 @@ function Login() {
               variant="contained"
               className={classes.submit}
             >
-              Sign In
+              Login
             </Button>
             <Grid container justify="flex-end">
               <Grid item>
-                <Link to="/register">{"Don't have an account? Sign Up"}</Link>
+                <Link to="/register">{"Don't have an account? Register"}</Link>
               </Grid>
             </Grid>
           </form>

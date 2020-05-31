@@ -14,6 +14,7 @@ import {
 } from "@material-ui/core";
 
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
+import ErrorDisplay from "../ErrorDisplay";
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -49,6 +50,9 @@ function Register() {
         </Typography>
         <form className={classes.form} noValidate>
           <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <ErrorDisplay />
+            </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
                 autoComplete="fname"
@@ -108,11 +112,11 @@ function Register() {
             variant="contained"
             className={classes.submit}
           >
-            Sign Up
+            Register
           </Button>
           <Grid container justify="flex-end">
             <Grid item>
-              <Link to="/login">Already have an account? Sign in</Link>
+              <Link to="/login">Already have an account? Login</Link>
             </Grid>
           </Grid>
         </form>

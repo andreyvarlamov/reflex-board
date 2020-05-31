@@ -6,3 +6,7 @@ export const UPDATE_CARD = "UPDATE_CARD";
 export const DELETE_CARD = "DELETE_CARD";
 export const ADD_CARD_LOCAL = "ADD_CARD_LOCAL";
 export const UPDATE_CARD_LOCAL = "UPDATE_CARD_LOCAL";
+
+// ERROR TYPES
+export const GET_ERRORS = "GET_ERRORS";
+export const CLEAR_ERRORS = "CLEAR_ERRORS";

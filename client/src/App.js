@@ -14,7 +14,7 @@ import Login from "./components/pages/Login";
 import Register from "./components/pages/Register";
 
 // Context Providers
-import { BoardProvider } from "./contexts/providers";
+import { BoardProvider, ErrorProvider } from "./contexts/providers";
 
 function App() {
   return (
@@ -23,18 +23,20 @@ function App() {
       <ThemeProvider theme={reflex}>
         <Router>
           <BoardProvider>
-            <ReflexNavbar />
-            <Switch>
-              <Route path="/login">
-                <Login />
-              </Route>
-              <Route path="/register">
-                <Register />
-              </Route>
-              <Route path="/">
-                <ReflexMainArea />
-              </Route>
-            </Switch>
+            <ErrorProvider>
+              <ReflexNavbar />
+              <Switch>
+                <Route path="/login">
+                  <Login />
+                </Route>
+                <Route path="/register">
+                  <Register />
+                </Route>
+                <Route path="/">
+                  <ReflexMainArea />
+                </Route>
+              </Switch>
+            </ErrorProvider>
           </BoardProvider>
         </Router>
       </ThemeProvider>
