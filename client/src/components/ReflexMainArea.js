@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { v4 as uuid } from "uuid";
 
 import { makeStyles, Typography, Button } from "@material-ui/core";
@@ -7,7 +7,7 @@ import ReflexCard from "./ReflexCard";
 import CardDetailDialog from "./dialogs/CardDetailDialog";
 
 // Contexts
-import { BoardContext } from "../contexts";
+import { BoardContext, AuthContext } from "../contexts";
 
 const useStyles = makeStyles(theme => ({
   // boardCanvas: {
@@ -55,6 +55,7 @@ function ReflexMainArea() {
 
   // Contexts
   const { board, loading } = useContext(BoardContext);
+  const { loadUser } = useContext(AuthContext);
 
   // States
   const [editing, setEditing] = useState(-1);

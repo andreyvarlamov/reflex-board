@@ -1,5 +1,5 @@
-import React, { useContext } from "react";
-import { Link } from "react-router-dom";
+import React, { useContext, useState } from "react";
+import { Link, useHistory } from "react-router-dom";
 
 import {
   Typography,
@@ -15,7 +15,7 @@ import {
 
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 
-import { ErrorContext } from "../../contexts";
+import { ErrorContext, AuthContext } from "../../contexts";
 
 import ErrorDisplay from "../ErrorDisplay";
 
@@ -42,7 +42,24 @@ const useStyles = makeStyles(theme => ({
 function Login() {
   const classes = useStyles();
 
+  const history = useHistory();
+
   const { msg, status, id } = useContext(ErrorContext);
+
+  const { login } = useContext(AuthContext);
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const submitForm = e => {
+    e.preventDefault();
+
+    const data = { email, password };
+
+    login(data);
+
+    history.push("/");
+  };
 
   return (
     <div>
@@ -54,7 +71,7 @@ function Login() {
           <Typography component="h1" variant="h5">
             Login
           </Typography>
-          <form className={classes.form} noValidate>
+          <form className={classes.form} noValidate onSubmit={submitForm}>
             <ErrorDisplay />
             <TextField
               variant="outlined"
@@ -65,6 +82,10 @@ function Login() {
               label="Email Address"
               name="email"
               autoComplete="email"
+              onChange={e => {
+                setEmail(e.target.value);
+              }}
+              value={email}
               autoFocus
             />
             <TextField
@@ -77,10 +98,10 @@ function Login() {
               type="password"
               id="password"
               autoComplete="current-password"
-            />
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
+              onChange={e => {
+                setPassword(e.target.value);
+              }}
+              value={password}
             />
             <Button
               type="submit"

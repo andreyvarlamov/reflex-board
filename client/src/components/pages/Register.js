@@ -1,12 +1,10 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useContext } from "react";
+import { Link, useHistory } from "react-router-dom";
 
 import {
   Avatar,
   Button,
   TextField,
-  FormControlLabel,
-  Checkbox,
   Grid,
   Typography,
   makeStyles,
@@ -15,6 +13,8 @@ import {
 
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import ErrorDisplay from "../ErrorDisplay";
+
+import { AuthContext } from "../../contexts";
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -39,6 +39,31 @@ const useStyles = makeStyles(theme => ({
 function Register() {
   const classes = useStyles();
 
+  const history = useHistory();
+
+  const { register } = useContext(AuthContext);
+
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [password2, setPassword2] = useState("");
+
+  const submitForm = e => {
+    e.preventDefault();
+
+    const data = {
+      firstName,
+      lastName,
+      email,
+      password,
+      password2,
+    };
+
+    register(data);
+    history.push("/");
+  };
+
   return (
     <Container component="main" maxWidth="xs">
       <div className={classes.paper}>
@@ -48,7 +73,7 @@ function Register() {
         <Typography component="h1" variant="h5">
           Register
         </Typography>
-        <form className={classes.form} noValidate>
+        <form className={classes.form} noValidate onSubmit={submitForm}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <ErrorDisplay />
@@ -62,6 +87,10 @@ function Register() {
                 fullWidth
                 id="firstName"
                 label="First Name"
+                onChange={e => {
+                  setFirstName(e.target.value);
+                }}
+                value={firstName}
                 autoFocus
               />
             </Grid>
@@ -74,6 +103,10 @@ function Register() {
                 label="Last Name"
                 name="lastName"
                 autoComplete="lname"
+                onChange={e => {
+                  setLastName(e.target.value);
+                }}
+                value={lastName}
               />
             </Grid>
             <Grid item xs={12}>
@@ -85,6 +118,10 @@ function Register() {
                 label="Email Address"
                 name="email"
                 autoComplete="email"
+                onChange={e => {
+                  setEmail(e.target.value);
+                }}
+                value={email}
               />
             </Grid>
             <Grid item xs={12}>
@@ -97,12 +134,26 @@ function Register() {
                 type="password"
                 id="password"
                 autoComplete="current-password"
+                onChange={e => {
+                  setPassword(e.target.value);
+                }}
+                value={password}
               />
             </Grid>
             <Grid item xs={12}>
-              <FormControlLabel
-                control={<Checkbox value="allowExtraEmails" color="primary" />}
-                label="I want to receive inspiration, marketing promotions and updates via email."
+              <TextField
+                variant="outlined"
+                required
+                fullWidth
+                name="password2"
+                label="Confirm Password"
+                type="password"
+                id="password2"
+                autoComplete="current-password"
+                onChange={e => {
+                  setPassword2(e.target.value);
+                }}
+                value={password2}
               />
             </Grid>
           </Grid>

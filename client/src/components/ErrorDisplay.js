@@ -23,7 +23,7 @@ function ErrorDisplay(props) {
   const classes = useStyles();
 
   return (
-    <Paper className={classes.errorPaper} elevation="0">
+    <Paper className={classes.errorPaper} elevation={0}>
       <ErrorIcon className={classes.errorIcon} />
       <Typography className={classes.errorMsg}>Error</Typography>
     </Paper>

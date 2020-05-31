@@ -15,6 +15,7 @@ import Register from "./components/pages/Register";
 
 // Context Providers
 import { BoardProvider, ErrorProvider } from "./contexts/providers";
+import AuthProvider from "./contexts/providers/AuthProvider";
 
 function App() {
   return (
@@ -24,18 +25,20 @@ function App() {
         <Router>
           <BoardProvider>
             <ErrorProvider>
-              <ReflexNavbar />
-              <Switch>
-                <Route path="/login">
-                  <Login />
-                </Route>
-                <Route path="/register">
-                  <Register />
-                </Route>
-                <Route path="/">
-                  <ReflexMainArea />
-                </Route>
-              </Switch>
+              <AuthProvider>
+                <ReflexNavbar />
+                <Switch>
+                  <Route path="/login">
+                    <Login />
+                  </Route>
+                  <Route path="/register">
+                    <Register />
+                  </Route>
+                  <Route path="/">
+                    <ReflexMainArea />
+                  </Route>
+                </Switch>
+              </AuthProvider>
             </ErrorProvider>
           </BoardProvider>
         </Router>
