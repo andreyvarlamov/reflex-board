@@ -1,14 +1,13 @@
-import React, { useReducer, useEffect, useState } from "react";
+import React, { useReducer, useEffect, useState, useContext } from "react";
 import axios from "axios";
 
-import { AuthContext } from "..";
+import { AuthContext, ErrorContext } from "..";
 
 import { loadUser, register, login, logout } from "../actions/authActions";
 
 import AuthReducer from "../reducers/authReducer";
 
 const initialState = {
-  token: localStorage.getItem("token"),
   isAuthenticated: null,
   isLoading: false,
   user: null,
@@ -17,29 +16,30 @@ const initialState = {
 function AuthProvider(props) {
   const [state, dispatch] = useReducer(AuthReducer, initialState);
 
+  const { returnErrors } = useContext(ErrorContext);
+
   const [once, setOnce] = useState(true);
   useEffect(() => {
     if (once) {
-      loadUser(state, dispatch);
+      loadUser(dispatch, returnErrors);
       setOnce(false);
     }
-  }, [once, state]);
+  }, [once]);
 
   return (
     <AuthContext.Provider
       value={{
-        token: state.token,
         isAuthenticated: state.isAuthenticated,
         isLoading: state.isLoading,
         user: state.user,
         loadUser: () => {
-          loadUser(state, dispatch);
+          loadUser(dispatch, returnErrors);
         },
         register: data => {
-          register(state, dispatch, data);
+          register(dispatch, returnErrors, data);
         },
         login: data => {
-          login(state, dispatch, data);
+          login(dispatch, returnErrors, data);
         },
         logout: () => {
           logout(dispatch);

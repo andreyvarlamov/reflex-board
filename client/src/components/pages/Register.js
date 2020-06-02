@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
 
 import {
@@ -14,7 +14,7 @@ import {
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import ErrorDisplay from "../ErrorDisplay";
 
-import { AuthContext } from "../../contexts";
+import { AuthContext, ErrorContext } from "../../contexts";
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -41,7 +41,9 @@ function Register() {
 
   const history = useHistory();
 
-  const { register } = useContext(AuthContext);
+  const { register, isAuthenticated } = useContext(AuthContext);
+
+  const { msg, id } = useContext(ErrorContext);
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -61,8 +63,11 @@ function Register() {
     };
 
     register(data);
-    history.push("/");
   };
+
+  useEffect(() => {
+    if (isAuthenticated) history.push("/");
+  }, [isAuthenticated]);
 
   return (
     <Container component="main" maxWidth="xs">
@@ -76,7 +81,7 @@ function Register() {
         <form className={classes.form} noValidate onSubmit={submitForm}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <ErrorDisplay />
+              {id === "REGISTER_ERROR" ? <ErrorDisplay msg={msg} /> : null}
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField

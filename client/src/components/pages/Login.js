@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
 
 import {
@@ -44,9 +44,9 @@ function Login() {
 
   const history = useHistory();
 
-  const { msg, status, id } = useContext(ErrorContext);
+  const { msg, id } = useContext(ErrorContext);
 
-  const { login } = useContext(AuthContext);
+  const { login, isAuthenticated } = useContext(AuthContext);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -58,8 +58,12 @@ function Login() {
 
     login(data);
 
-    history.push("/");
+    // if (status !== "LOGIN_ERROR") history.push("/");
   };
+
+  useEffect(() => {
+    if (isAuthenticated) history.push("/");
+  }, [isAuthenticated]);
 
   return (
     <div>
@@ -72,7 +76,7 @@ function Login() {
             Login
           </Typography>
           <form className={classes.form} noValidate onSubmit={submitForm}>
-            <ErrorDisplay />
+            {id === "LOGIN_ERROR" ? <ErrorDisplay msg={msg} /> : null}
             <TextField
               variant="outlined"
               margin="normal"

@@ -10,6 +10,8 @@ import {
 } from "../actions";
 
 export default (state, action) => {
+  console.log("DEBUG: Auth Reducer action type - " + action.type);
+  console.log(action);
   switch (action.type) {
     case USER_LOADING:
       return {
@@ -25,9 +27,10 @@ export default (state, action) => {
       };
     case LOGIN_SUCCESS:
     case REGISTER_SUCCESS:
+      localStorage.setItem("token", action.payload.token);
       return {
         ...state,
-        ...action.payload,
+        user: action.payload.user,
         isAuthenticated: true,
         isLoading: false,
       };
@@ -38,7 +41,6 @@ export default (state, action) => {
       localStorage.removeItem("token");
       return {
         ...state,
-        token: null,
         user: null,
         isAuthenticated: false,
         isLoading: false,

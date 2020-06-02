@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useContext } from "react";
 import { useLocation, Link } from "react-router-dom";
 
 import {
@@ -8,7 +8,8 @@ import {
   Button,
   makeStyles,
 } from "@material-ui/core";
-import { Menu as MenuIcon } from "@material-ui/icons";
+
+import { AuthContext } from "../contexts";
 
 const useStyles = makeStyles(theme => ({
   menuButton: {
@@ -36,6 +37,8 @@ function ReflexNavbar() {
 
   const location = useLocation();
 
+  const { isAuthenticated, logout } = useContext(AuthContext);
+
   return (
     <div className={classes.root}>
       <AppBar position="static" color="transparent">
@@ -50,11 +53,15 @@ function ReflexNavbar() {
           <Typography variant="h6" className={classes.title}>
             Reflex
           </Typography>
-
-          {location.pathname === "/" ? (
+          {location.pathname === "/" && !isAuthenticated ? (
             <Link to="/login" className={classes.loginLink}>
               <Button color="inherit">Login</Button>
             </Link>
+          ) : null}
+          {isAuthenticated ? (
+            <Button color="inherit" onClick={logout}>
+              Logout
+            </Button>
           ) : null}
         </Toolbar>
       </AppBar>

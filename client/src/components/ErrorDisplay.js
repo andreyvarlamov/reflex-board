@@ -25,7 +25,7 @@ function ErrorDisplay(props) {
   return (
     <Paper className={classes.errorPaper} elevation={0}>
       <ErrorIcon className={classes.errorIcon} />
-      <Typography className={classes.errorMsg}>Error</Typography>
+      <Typography className={classes.errorMsg}>{props.msg}</Typography>
     </Paper>
   );
 }

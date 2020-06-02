@@ -17,6 +17,8 @@ const updateCards = (prevCards, updatedCard) => {
 };
 
 export default (state, action) => {
+  console.log("DEBUG: Board Reducer action type - " + action.type);
+  console.log(action);
   switch (action.type) {
     case GET_BOARD:
       return {

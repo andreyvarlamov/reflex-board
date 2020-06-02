@@ -18,7 +18,7 @@ function ErrorProvider(props) {
   return (
     <ErrorContext.Provider
       value={{
-        msg: state.message,
+        msg: state.msg,
         status: state.status,
         id: state.id,
         returnErrors: (msg, status, id = null) => {

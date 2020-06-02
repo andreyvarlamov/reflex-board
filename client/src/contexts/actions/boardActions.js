@@ -18,7 +18,7 @@ export const fetchBoard = dispatch => {
   axios
     .get("/api/boards/" + boardId)
     .then(res => dispatch({ type: GET_BOARD, payload: res.data }))
-    .catch(err => console.log(err));
+    .catch(err => console.log("ERR: " + err));
 };
 
 export const addCard = (dispatch, card) => {

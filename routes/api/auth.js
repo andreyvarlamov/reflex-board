@@ -38,10 +38,12 @@ auth.post("/", (req, res) => {
             if (jwtErr) throw jwtErr;
             return res.json({
               token,
-              id: user.id,
-              firstName: user.firstName,
-              lastName: user.lastName,
-              email: user.email,
+              user: {
+                id: user.id,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+              },
             });
           }
         );

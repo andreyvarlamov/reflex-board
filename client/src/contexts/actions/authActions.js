@@ -1,7 +1,5 @@
 import axios from "axios";
 
-import { returnErrors } from "./errorActions";
-
 import {
   USER_LOADING,
   USER_LOADED,
@@ -14,22 +12,22 @@ import {
 } from "./";
 
 // Check token and load user
-export const loadUser = (state, dispatch) => {
+export const loadUser = (dispatch, returnErrors) => {
   dispatch({ type: USER_LOADING });
 
   axios
-    .get("/api/auth/user", tokenConfig(state))
+    .get("/api/auth/user", tokenConfig())
     .then(res => dispatch({ type: USER_LOADED, payload: res.data }))
     .catch(err => {
-      returnErrors(dispatch, err.response.data, err.response.status);
-      // dispatch({ type: AUTH_ERROR });
+      returnErrors(err.response.data, err.response.status);
+      dispatch({ type: AUTH_ERROR });
     });
 };
 
 // Register
 export const register = (
-  state,
   dispatch,
+  returnErrors,
   { firstName, lastName, email, password, password2 }
 ) => {
   // Req Headers
@@ -53,22 +51,16 @@ export const register = (
     .post("/api/users", body, config)
     .then(res => {
       dispatch({ type: REGISTER_SUCCESS, payload: res.data });
-      localStorage.setItem("token", res.data.token);
-      loadUser(state, dispatch);
+      loadUser(dispatch, returnErrors);
     })
     .catch(err => {
-      returnErrors(
-        dispatch,
-        err.response.data,
-        err.response.status,
-        "REGISTER_ERROR"
-      );
+      returnErrors(err.response.data, err.response.status, "REGISTER_ERROR");
       dispatch({ type: REGISTER_FAIL });
     });
 };
 
 // Login User
-export const login = (state, dispatch, { email, password }) => {
+export const login = (dispatch, returnErrors, { email, password }) => {
   // Req Headers
   const config = {
     headers: {
@@ -84,20 +76,11 @@ export const login = (state, dispatch, { email, password }) => {
     .post("/api/auth", body, config)
     .then(res => {
       dispatch({ type: LOGIN_SUCCESS, payload: res.data });
-      // TODO Fix this
-      console.log("DEBUG: Setting local Storage: token - " + res.data.token);
-      localStorage.setItem("token", res.data.token);
-      loadUser(state, dispatch);
+
+      loadUser(dispatch, returnErrors);
     })
     .catch(err => {
-      dispatch(
-        returnErrors(
-          dispatch,
-          err.response.data,
-          err.response.status,
-          "LOGIN_ERROR"
-        )
-      );
+      returnErrors(err.response.data, err.response.status, "LOGIN_ERROR");
       dispatch({ type: LOGIN_FAIL });
     });
 };
@@ -108,11 +91,9 @@ export const logout = dispatch => {
 };
 
 // Setup config/headers and token
-export const tokenConfig = state => {
+export const tokenConfig = () => {
   // Get token from localstorage
-  const token = state.token;
-
-  console.log(token);
+  const token = localStorage.getItem("token");
 
   // Headers
   const config = {
@@ -123,8 +104,6 @@ export const tokenConfig = state => {
   if (token) {
     config.headers["x-auth-token"] = token;
   }
-
-  console.log(config);
 
   return config;
 };
