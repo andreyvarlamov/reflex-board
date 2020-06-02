@@ -18,7 +18,7 @@ import {
 } from "@material-ui/core";
 import DescriptionIcon from "@material-ui/icons/Description";
 
-import { BoardContext } from "../../contexts";
+import { BoardContext } from "../contexts";
 
 const useStyles = makeStyles(theme => ({
   dialogTitle: {

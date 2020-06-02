@@ -25,7 +25,7 @@ users.get("/", (req, res) => {
 
 // @route POST /api/users
 // @desc Create a new user
-// @access public
+// @access Public
 users.post("/", (req, res) => {
   console.log("DEBUG: POST /api/users");
   const { firstName, lastName, email, password } = req.body;

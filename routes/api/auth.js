@@ -58,6 +58,7 @@ auth.post("/", (req, res) => {
 auth.get("/user", authMiddleware, (req, res) => {
   User.findById(req.user.id)
     .select("-password")
+    .populate("boards", "title")
     .then(user => res.json(user))
     .catch(err => {
       res.status(400).json({ msg: err });

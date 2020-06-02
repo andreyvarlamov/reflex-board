@@ -1,6 +1,9 @@
 const boards = require("express").Router();
 
 const Board = require("../../models/Board");
+const User = require("../../models/User");
+
+const authMiddleware = require("../../middleware/auth");
 
 // @route GET /api/boards
 // @desc Get All Boards
@@ -17,6 +20,7 @@ boards.get("/", (req, res) => {
 
 // @route GET /api/boards/:boardId
 // @desc Get a Specific Board
+// @access Public
 boards.get("/:boardId", (req, res) => {
   const boardId = req.params.boardId;
   console.log("DEBUG: GET /api/boards/" + boardId);
@@ -31,15 +35,30 @@ boards.get("/:boardId", (req, res) => {
 
 // @route POST /api/boards
 // @desc Add a New Board
-// @access Public
-boards.post("/", (req, res) => {
+// @access Private
+boards.post("/", authMiddleware, (req, res) => {
   console.log("DEBUG: POST /api/boards");
   const { title } = req.body;
-  const newBoard = new Board({ title });
-  newBoard
-    .save()
-    .then(board => res.json(board))
-    .catch(err => console.log(err));
+  const { id } = req.user;
+
+  User.findById(id)
+    .then(user => {
+      const newBoard = new Board({ title, userId: id });
+      newBoard
+        .save()
+        .then(board => res.json(board))
+        .catch(err => console.log(err));
+
+      user.boards.push(newBoard._id);
+
+      user
+        .save()
+        .then()
+        .catch(err => console.log(err));
+    })
+    .catch(err => {
+      res.status(400).json({ msg: "No such user id" });
+    });
 });
 
 // @route DELETE /api/boards/:boardId

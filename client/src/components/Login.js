@@ -15,9 +15,9 @@ import {
 
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 
-import { ErrorContext, AuthContext } from "../../contexts";
+import { ErrorContext, AuthContext } from "../contexts";
 
-import ErrorDisplay from "../ErrorDisplay";
+import ErrorDisplay from "./ErrorDisplay";
 
 const useStyles = makeStyles(theme => ({
   paper: {

@@ -53,16 +53,15 @@ function ReflexNavbar() {
           <Typography variant="h6" className={classes.title}>
             Reflex
           </Typography>
-          {location.pathname === "/" && !isAuthenticated ? (
-            <Link to="/login" className={classes.loginLink}>
-              <Button color="inherit">Login</Button>
-            </Link>
-          ) : null}
           {isAuthenticated ? (
             <Button color="inherit" onClick={logout}>
               Logout
             </Button>
-          ) : null}
+          ) : (
+            <Link to="/login" className={classes.loginLink}>
+              <Button color="inherit">Login</Button>
+            </Link>
+          )}
         </Toolbar>
       </AppBar>
     </div>

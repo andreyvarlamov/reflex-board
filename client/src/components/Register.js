@@ -12,9 +12,9 @@ import {
 } from "@material-ui/core";
 
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
-import ErrorDisplay from "../ErrorDisplay";
+import ErrorDisplay from "./ErrorDisplay";
 
-import { AuthContext, ErrorContext } from "../../contexts";
+import { AuthContext, ErrorContext } from "../contexts";
 
 const useStyles = makeStyles(theme => ({
   paper: {

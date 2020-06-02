@@ -4,10 +4,11 @@ import { v4 as uuid } from "uuid";
 import { makeStyles, Typography, Button } from "@material-ui/core";
 
 import ReflexCard from "./ReflexCard";
-import CardDetailDialog from "./dialogs/CardDetailDialog";
+import CardDetailDialog from "./CardDetailDialog";
 
 // Contexts
 import { BoardContext, AuthContext } from "../contexts";
+import { useParams } from "react-router-dom";
 
 const useStyles = makeStyles(theme => ({
   // boardCanvas: {
@@ -50,17 +51,25 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function ReflexMainArea() {
+function ReflexBoardCanvas() {
   const classes = useStyles();
 
   // Contexts
-  const { board, loading } = useContext(BoardContext);
+  const { board, loading, fetchBoard } = useContext(BoardContext);
   const { loadUser } = useContext(AuthContext);
 
   // States
   const [editing, setEditing] = useState(-1);
   const [detailOpen, setDetailOpen] = useState(false);
   const [chosenCardId, setChosenCardId] = useState("");
+
+  // Router Params
+  const { boardId } = useParams();
+
+  useEffect(() => {
+    console.log("DEBUG: Fetching Board");
+    if (boardId !== "") fetchBoard(boardId);
+  }, [boardId]);
 
   // Inner components
   const newCardComponent = column => (
@@ -142,4 +151,4 @@ function ReflexMainArea() {
   );
 }
 
-export default ReflexMainArea;
+export default ReflexBoardCanvas;

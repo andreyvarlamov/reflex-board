@@ -8,12 +8,15 @@ import {
   ADD_CARD_LOCAL,
   UPDATE_CARD_LOCAL,
   DELETE_CARD,
+  ADD_BOARD,
 } from ".";
 
 //TEMP
-const boardId = "5ec35ca37ce40e6643243748";
+// const boardId = "5ec35ca37ce40e6643243748";
 
-export const fetchBoard = dispatch => {
+import { tokenConfig } from "./authActions";
+
+export const fetchBoard = (dispatch, boardId) => {
   dispatch({ type: BOARD_LOADING });
   axios
     .get("/api/boards/" + boardId)
@@ -21,7 +24,17 @@ export const fetchBoard = dispatch => {
     .catch(err => console.log("ERR: " + err));
 };
 
-export const addCard = (dispatch, card) => {
+export const addBoard = (dispatch, board, loadUser) => {
+  axios
+    .post("/api/boards", board, tokenConfig())
+    .then(res => {
+      dispatch({ type: ADD_BOARD, payload: res.data });
+      loadUser();
+    })
+    .catch(err => console.log("ERR: " + err));
+};
+
+export const addCard = (dispatch, boardId, card) => {
   dispatch({ type: ADD_CARD_LOCAL, payload: card });
   const { title, status } = card;
   axios

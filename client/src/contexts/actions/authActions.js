@@ -19,6 +19,7 @@ export const loadUser = (dispatch, returnErrors) => {
     .get("/api/auth/user", tokenConfig())
     .then(res => dispatch({ type: USER_LOADED, payload: res.data }))
     .catch(err => {
+      console.log("ERR: in loadUser: " + err);
       returnErrors(err.response.data, err.response.status);
       dispatch({ type: AUTH_ERROR });
     });
@@ -54,6 +55,7 @@ export const register = (
       loadUser(dispatch, returnErrors);
     })
     .catch(err => {
+      console.log("ERR: in register: " + err);
       returnErrors(err.response.data, err.response.status, "REGISTER_ERROR");
       dispatch({ type: REGISTER_FAIL });
     });
@@ -80,6 +82,7 @@ export const login = (dispatch, returnErrors, { email, password }) => {
       loadUser(dispatch, returnErrors);
     })
     .catch(err => {
+      console.log("ERR: in loadUser: " + err);
       returnErrors(err.response.data, err.response.status, "LOGIN_ERROR");
       dispatch({ type: LOGIN_FAIL });
     });
