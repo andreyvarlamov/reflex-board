@@ -2,11 +2,11 @@ import React, { useContext, useEffect, useState } from "react";
 import {
   Typography,
   makeStyles,
-  List,
-  ListItem,
   Paper,
   TextField,
   Button,
+  Input,
+  ClickAwayListener,
 } from "@material-ui/core";
 import { AuthContext, BoardContext } from "../contexts";
 import { useHistory } from "react-router-dom";
@@ -25,54 +25,85 @@ const useStyles = makeStyles(theme => ({
     width: "100%", // Fix IE 11 issue.
     marginTop: theme.spacing(1),
   },
+  boardsWrapper: {
+    marginLeft: "50px",
+    marginRight: "50px",
+    display: "flex",
+    flexDirection: "row",
+    flexWrap: "wrap",
+  },
+  boardCard: {
+    width: "150px",
+    minHeight: "150px",
+    padding: "1rem",
+    margin: "0.5rem 0.5rem",
+    borderRadius: "5px",
+    display: "flex",
+    "&:hover": {
+      background: theme.palette.reflexGrey.light,
+      cursor: "pointer",
+    },
+  },
+  boardDetailText: {
+    width: "100%",
+    flexGrow: "1",
+    textAlign: "center",
+    margin: "auto",
+    overflowWrap: "break-word",
+  },
+  newBoardInput: {
+    textAlign: "center",
+  },
 }));
 
 function BoardCard(props) {
-  return <Paper onClick={props.onClick}>{props.title}</Paper>;
-}
-
-function AddBoardForm(props) {
   const classes = useStyles();
 
-  const [title, setTitle] = useState("");
+  const { newBoard } = props;
 
-  const { addBoard } = useContext(BoardContext);
+  const NewBoardCard = () => {
+    const [title, setTitle] = useState("");
 
-  const submitForm = e => {
-    e.preventDefault();
+    const { addBoard } = useContext(BoardContext);
 
-    const data = { title };
+    const submitForm = () => {
+      if (title) addBoard({ title });
+    };
 
-    addBoard(data);
-
-    // if (status !== "LOGIN_ERROR") history.push("/");
+    return (
+      <ClickAwayListener
+        onClickAway={submitForm}
+        mouseEvent="onMouseDown"
+        touchEvent="onTouchStart"
+      >
+        <Paper className={classes.boardCard} onClick={props.onClick}>
+          <Input
+            classes={{ input: classes.newBoardInput }}
+            multiline
+            disableUnderline
+            placeholder={"+ Add board"}
+            onKeyPress={e => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                submitForm();
+              }
+            }}
+            onChange={e => setTitle(e.target.value)}
+            value={title}
+          ></Input>
+        </Paper>
+      </ClickAwayListener>
+    );
   };
 
-  return (
-    <React.Fragment>
-      <Typography variant="h5" className={classes.h5Label}>
-        Add New Board
+  return newBoard ? (
+    <NewBoardCard />
+  ) : (
+    <Paper className={classes.boardCard} onClick={props.onClick}>
+      <Typography className={classes.boardDetailText} variant="subtitle1">
+        {props.title}
       </Typography>
-      <form className={classes.form} noValidate onSubmit={submitForm}>
-        <TextField
-          variant="outlined"
-          margin="normal"
-          required
-          fullWidth
-          id="title"
-          label="Title"
-          name="title"
-          onChange={e => {
-            setTitle(e.target.value);
-          }}
-          value={title}
-          autoFocus
-        />
-        <Button type="submit" fullWidth variant="contained">
-          Add
-        </Button>
-      </form>
-    </React.Fragment>
+    </Paper>
   );
 }
 
@@ -101,14 +132,16 @@ function UserDetail() {
           <Typography variant="h5" className={classes.h5Label}>
             Your Boards:
           </Typography>
-          {user.boards.map((board, index) => (
-            <BoardCard
-              key={index}
-              title={board.title}
-              onClick={() => setBoardId(board._id)}
-            />
-          ))}
-          <AddBoardForm />
+          <div className={classes.boardsWrapper}>
+            {user.boards.map((board, index) => (
+              <BoardCard
+                key={index}
+                title={board.title}
+                onClick={() => setBoardId(board._id)}
+              />
+            ))}
+            <BoardCard newBoard />
+          </div>
         </React.Fragment>
       ) : null}
     </React.Fragment>

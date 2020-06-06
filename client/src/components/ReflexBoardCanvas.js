@@ -1,7 +1,13 @@
 import React, { useState, useContext, useEffect } from "react";
 import { v4 as uuid } from "uuid";
 
-import { makeStyles, Typography, Button } from "@material-ui/core";
+import {
+  makeStyles,
+  Typography,
+  Button,
+  Input,
+  ClickAwayListener,
+} from "@material-ui/core";
 
 import ReflexCard from "./ReflexCard";
 import CardDetailDialog from "./CardDetailDialog";
@@ -49,6 +55,10 @@ const useStyles = makeStyles(theme => ({
     padding: "0 1rem",
     fontWeight: "bold",
   },
+  newStatusInput: {
+    ...theme.typography.h6,
+    textAlign: "center",
+  },
 }));
 
 function ReflexBoardCanvas() {
@@ -95,6 +105,40 @@ function ReflexBoardCanvas() {
       &times; Cancel
     </Button>
   );
+
+  const NewStatusColumn = () => {
+    const [statusName, setStatusName] = useState("");
+
+    return (
+      <div className={classes.cardsColumn}>
+        <div className={classes.columnCardsContainer}>
+          <ClickAwayListener
+            onClickAway={() => {
+              setStatusName("");
+            }}
+            mouseEvent="onMouseDown"
+            touchEvent="onTouchStart"
+          >
+            <Input
+              disableUnderline
+              multiline
+              value={statusName}
+              placeholder={"+ New Status"}
+              onChange={e => setStatusName(e.target.value)}
+              classes={{ input: classes.newStatusInput }}
+              onKeyPress={e => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+
+                  setStatusName("");
+                }
+              }}
+            />
+          </ClickAwayListener>
+        </div>
+      </div>
+    );
+  };
 
   // Handlers
   const handleCardClick = id => {
@@ -144,6 +188,7 @@ function ReflexBoardCanvas() {
                 </div>
               </div>
             ))}
+            <NewStatusColumn />
           </div>
         </React.Fragment>
       )}

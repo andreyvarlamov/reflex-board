@@ -13,6 +13,7 @@ const useStyles = makeStyles(theme => ({
     padding: "0.5rem 1rem",
     width: "100%",
     overflowWrap: "break-word",
+    borderRadius: "5px",
     "&:hover": {
       background: theme.palette.reflexGrey.light,
       cursor: "pointer",
