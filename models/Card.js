@@ -20,8 +20,7 @@ const CardSchema = new Schema(
     },
     assignee: String,
     status: {
-      type: Number,
-      default: 0,
+      type: String,
       required: true,
     },
     boardId: {

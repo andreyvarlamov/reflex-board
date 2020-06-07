@@ -7,7 +7,12 @@ import {
   Button,
   Input,
   ClickAwayListener,
+  Dialog,
+  DialogActions,
+  DialogTitle,
+  DialogContent,
 } from "@material-ui/core";
+import DeleteIcon from "@material-ui/icons/Delete";
 
 import ReflexCard from "./ReflexCard";
 import CardDetailDialog from "./CardDetailDialog";
@@ -43,6 +48,7 @@ const useStyles = makeStyles(theme => ({
     background: theme.palette.reflexGrey.main,
     borderRadius: "5px",
     padding: "0.5rem",
+    position: "relative",
   },
   cardItem: {
     margin: "0.5rem 0",
@@ -59,6 +65,19 @@ const useStyles = makeStyles(theme => ({
     ...theme.typography.h6,
     textAlign: "center",
   },
+  deleteButton: {
+    position: "absolute",
+    top: "5px",
+    right: "5px",
+    color: "#AAAAAA",
+    "&:hover": {
+      cursor: "pointer",
+      padding: "3px",
+      color: "#505050",
+      backgroundColor: "#AAAAAA",
+      borderRadius: "50%",
+    },
+  },
 }));
 
 function ReflexBoardCanvas() {
@@ -72,6 +91,8 @@ function ReflexBoardCanvas() {
   const [editing, setEditing] = useState(-1);
   const [detailOpen, setDetailOpen] = useState(false);
   const [chosenCardId, setChosenCardId] = useState("");
+  const [confirmDelStatusOpen, setConfirmDelStatusOpen] = useState(false);
+  const [statusToDelete, setStatusToDelete] = useState("");
 
   // Router Params
   const { boardId } = useParams();
@@ -82,9 +103,9 @@ function ReflexBoardCanvas() {
   }, [boardId]);
 
   // Inner components
-  const newCardComponent = column => (
+  const newCardComponent = status => (
     <div className={classes.cardItem}>
-      <ReflexCard newCard column={column} callback={() => setEditing(-1)} />
+      <ReflexCard newCard status={status} callback={() => setEditing(-1)} />
     </div>
   );
   const addButtonComponent = column => (
@@ -154,12 +175,30 @@ function ReflexBoardCanvas() {
     setDetailOpen(true);
   };
 
+  const handleDelStatusClose = confirm => {
+    if (confirm) {
+      updateBoard({
+        _id: board._id,
+        statusDictionary: board.statusDictionary.filter(
+          fStatus => fStatus !== statusToDelete
+        ),
+      });
+    }
+
+    setConfirmDelStatusOpen(false);
+    setStatusToDelete("");
+  };
+
   return (
     <React.Fragment>
       {loading ? (
         <Typography>Loading...</Typography>
       ) : (
         <React.Fragment>
+          <ConfirmDeleteStatusDialog
+            open={confirmDelStatusOpen}
+            handleClose={handleDelStatusClose}
+          />
           <CardDetailDialog
             open={detailOpen}
             handleClose={() => {
@@ -174,13 +213,23 @@ function ReflexBoardCanvas() {
           </Typography>
           <div className={classes.cardsContainer}>
             {board.statusDictionary.map((status, column) => (
-              <div key={column} className={classes.cardsColumn}>
+              <div key={uuid()} className={classes.cardsColumn}>
                 <div className={classes.columnCardsContainer}>
+                  <DeleteIcon
+                    className={classes.deleteButton}
+                    onClick={e => {
+                      e.stopPropagation();
+
+                      setStatusToDelete(status);
+
+                      setConfirmDelStatusOpen(true);
+                    }}
+                  />
                   <Typography variant="h6" className={classes.columnTitle}>
                     {status}
                   </Typography>
                   {board.cards
-                    .filter(card => card.status === column)
+                    .filter(card => card.status === status)
                     .map((card, index) => (
                       <div key={uuid()} className={classes.cardItem}>
                         <ReflexCard
@@ -189,7 +238,7 @@ function ReflexBoardCanvas() {
                         />
                       </div>
                     ))}
-                  {editing === column ? newCardComponent(column) : null}
+                  {editing === column ? newCardComponent(status) : null}
                   {editing !== column
                     ? addButtonComponent(column)
                     : cancelButtonComponent()}
@@ -203,5 +252,32 @@ function ReflexBoardCanvas() {
     </React.Fragment>
   );
 }
+
+const ConfirmDeleteStatusDialog = props => {
+  const { open, handleClose } = props;
+
+  const closeDialog = confirm => {
+    handleClose(confirm);
+  };
+
+  return (
+    <Dialog open={open} onClose={() => closeDialog(false)} fullWidth>
+      <DialogTitle>Delete the column?</DialogTitle>
+
+      <DialogContent>
+        This action will delete the column and all the cards contained in it. It
+        cannot be undone. Continue?
+      </DialogContent>
+      <DialogActions>
+        <Button autoFocus onClick={() => closeDialog(true)}>
+          Yes
+        </Button>
+        <Button autoFocus onClick={() => closeDialog(false)}>
+          No
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
 
 export default ReflexBoardCanvas;

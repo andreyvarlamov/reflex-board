@@ -80,17 +80,67 @@ boards.patch("/:boardId", authMiddleware, (req, res) => {
     const newBoard = req.body;
     delete newBoard._id;
 
-    Board.updateOne({ _id: boardId }, newBoard)
-      .then(() => {
-        Board.findById(boardId).then(board => {
-          if (board) return res.json(board);
-          else
-            return res
-              .status(400)
-              .json({ msg: "No such board id: " + boardId });
+    // If status dictionary changed, if there any statuses are deleted, delete corresponding cards
+    if (newBoard.statusDictionary) {
+      const deletedStatuses = board.statusDictionary.filter(
+        status => !newBoard.statusDictionary.includes(status)
+      );
+
+      if (deletedStatuses) {
+        Card.find({
+          boardId: boardId,
+          status: { $in: deletedStatuses },
+        }).then(cards => {
+          const foundCardIds = cards.map(card => card._id.toString());
+
+          Card.deleteMany({ _id: { $in: foundCardIds } }).then(() => {
+            Board.updateOne({ _id: boardId }, newBoard).then(() => {
+              Board.findById(boardId).then(board => {
+                board.cards = board.cards.filter(
+                  cardId => !foundCardIds.includes(cardId.toString())
+                );
+                board.save().then(() => {
+                  Board.findById(boardId)
+                    .populate("cards")
+                    .then(board => {
+                      if (!board)
+                        return res
+                          .status(400)
+                          .json({ msg: "No such board id: " + boardId });
+
+                      return res.json(board);
+                    });
+                });
+              });
+            });
+          });
         });
-      })
-      .catch();
+      } else {
+        Board.updateOne({ _id: boardId }, newBoard).then(() => {
+          Board.findById(boardId)
+            .populate("cards")
+            .then(board => {
+              if (board) return res.json(board);
+              else
+                return res
+                  .status(400)
+                  .json({ msg: "No such board id: " + boardId });
+            });
+        });
+      }
+    } else {
+      Board.updateOne({ _id: boardId }, newBoard).then(() => {
+        Board.findById(boardId)
+          .populate("cards")
+          .then(board => {
+            if (board) return res.json(board);
+            else
+              return res
+                .status(400)
+                .json({ msg: "No such board id: " + boardId });
+          });
+      });
+    }
   });
 });
 
