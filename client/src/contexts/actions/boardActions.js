@@ -10,6 +10,7 @@ import {
   ADD_CARD_LOCAL,
   UPDATE_CARD_LOCAL,
   DELETE_CARD,
+  UPDATE_BOARD,
 } from ".";
 
 //TEMP
@@ -42,6 +43,14 @@ export const deleteBoard = (dispatch, boardId, loadUser) => {
       loadUser();
     } else throw new Error("Error when deleting a board. Reload the page");
   });
+};
+
+export const updateBoard = (dispatch, board) => {
+  const boardId = board._id;
+  axios
+    .patch("/api/boards/" + boardId, board, tokenConfig())
+    .then(res => dispatch({ type: UPDATE_BOARD, payload: res.data }))
+    .catch(err => console.log("ERR: " + err));
 };
 
 export const addCard = (dispatch, boardId, card) => {

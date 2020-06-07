@@ -6,6 +6,7 @@ import {
   fetchBoard,
   addBoard,
   deleteBoard,
+  updateBoard,
   addCard,
   updateCard,
   deleteCard,
@@ -45,6 +46,9 @@ function BoardProvider(props) {
         },
         deleteBoard: boardId => {
           deleteBoard(dispatch, boardId, loadUser);
+        },
+        updateBoard: board => {
+          updateBoard(dispatch, board);
         },
         addCard: card => {
           addCard(dispatch, state.board._id, card);

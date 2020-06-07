@@ -65,7 +65,7 @@ function ReflexBoardCanvas() {
   const classes = useStyles();
 
   // Contexts
-  const { board, loading, fetchBoard } = useContext(BoardContext);
+  const { board, loading, fetchBoard, updateBoard } = useContext(BoardContext);
   const { loadUser } = useContext(AuthContext);
 
   // States
@@ -109,12 +109,21 @@ function ReflexBoardCanvas() {
   const NewStatusColumn = () => {
     const [statusName, setStatusName] = useState("");
 
+    const saveNewStatus = () => {
+      if (statusName)
+        updateBoard({
+          _id: board._id,
+          statusDictionary: [...board.statusDictionary, statusName],
+        });
+      setStatusName("");
+    };
+
     return (
       <div className={classes.cardsColumn}>
         <div className={classes.columnCardsContainer}>
           <ClickAwayListener
             onClickAway={() => {
-              setStatusName("");
+              saveNewStatus();
             }}
             mouseEvent="onMouseDown"
             touchEvent="onTouchStart"
@@ -129,8 +138,7 @@ function ReflexBoardCanvas() {
               onKeyPress={e => {
                 if (e.key === "Enter") {
                   e.preventDefault();
-
-                  setStatusName("");
+                  saveNewStatus();
                 }
               }}
             />

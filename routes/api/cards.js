@@ -54,16 +54,13 @@ cards.patch("/:cardId", (req, res) => {
   delete newCard._id;
 
   Card.updateOne({ _id: cardId }, newCard)
-    .then()
-    .catch(err => console.log(err));
-
-  Card.findById(cardId)
-    .then(card => {
-      res.json(card);
+    .then(() => {
+      Card.findById(cardId).then(card => {
+        if (card) return res.json(card);
+        else return res.status(400).json({ msg: "No such card id: " + cardId });
+      });
     })
-    .catch(err => {
-      res.status(400).json({ msg: "No such card id: " + cardId });
-    });
+    .catch(err => console.log(err));
 });
 
 // @route DELETE /api/cards/:cardId

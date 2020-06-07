@@ -61,6 +61,39 @@ boards.post("/", authMiddleware, (req, res) => {
     });
 });
 
+// @route PATCH /api/boards/:boardId
+// @desc Update a Board
+// @access Private
+boards.patch("/:boardId", authMiddleware, (req, res) => {
+  const boardId = req.params.boardId;
+  console.log("DEBUG: PATCH /api/boards/" + boardId);
+
+  const { id } = req.user;
+
+  Board.findById(boardId).then(board => {
+    if (!board) return res.status(404).json({ msg: "No such board id" });
+    if (board.userId.toString() !== id)
+      return res
+        .status(401)
+        .json({ msg: "Auth token does not correspond to the board's author" });
+
+    const newBoard = req.body;
+    delete newBoard._id;
+
+    Board.updateOne({ _id: boardId }, newBoard)
+      .then(() => {
+        Board.findById(boardId).then(board => {
+          if (board) return res.json(board);
+          else
+            return res
+              .status(400)
+              .json({ msg: "No such board id: " + boardId });
+        });
+      })
+      .catch();
+  });
+});
+
 // @route DELETE /api/boards/:boardId
 // @desc Deleate a Board
 // @access Private
@@ -74,14 +107,14 @@ boards.delete("/:boardId", authMiddleware, (req, res) => {
     .then(board => {
       if (board.userId.toString() !== id)
         return res.status(403).json({
-          msg: "Your auth token does not correspond to the board's author",
+          msg: "Auth token does not correspond to the board's author",
         });
 
       User.findById(id).then(user => {
         if (!user)
           return res.status(404).json({
             msg:
-              "User in yout token does not correspond to any user in the database",
+              "User in token does not correspond to any user in the database",
           });
 
         user.boards = user.boards.filter(

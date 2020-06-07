@@ -3,6 +3,7 @@ import {
   BOARD_LOADING,
   ADD_BOARD,
   DELETE_BOARD,
+  UPDATE_BOARD,
   ADD_CARD,
   UPDATE_CARD,
   ADD_CARD_LOCAL,
@@ -47,6 +48,11 @@ export default (state, action) => {
         board: null,
         prevBoard: null,
         loading: true,
+      };
+    case UPDATE_BOARD:
+      return {
+        ...state,
+        board: action.payload,
       };
     case ADD_CARD:
       return {
