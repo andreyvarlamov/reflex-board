@@ -276,7 +276,7 @@ function CardDetailDialog(props) {
                   const targetValue = e.target.value;
                   setCardData(prevData => ({
                     ...prevData,
-                    status: targetValue,
+                    status: board.statusDictionary[targetValue],
                   }));
                   handleCardSave();
                 }}
@@ -300,7 +300,7 @@ function CardDetailDialog(props) {
                   setCardEditing(prev => ({ ...prev, status: true }));
                 }}
               >
-                {board.statusDictionary[cardData.status]}
+                {cardData.status}
               </Typography>
             </div>
           )}

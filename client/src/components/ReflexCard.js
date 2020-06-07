@@ -65,12 +65,12 @@ function ReflexCard(props) {
   };
 
   const newCardComponent = () => {
-    const { column, callback } = props;
+    const { status, callback } = props;
 
     const submitCard = () => {
       if (title !== "") {
         addCard({
-          status: column,
+          status,
           title,
         });
         callback();
