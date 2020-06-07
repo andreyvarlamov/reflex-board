@@ -2,6 +2,7 @@ const boards = require("express").Router();
 
 const Board = require("../../models/Board");
 const User = require("../../models/User");
+const Card = require("../../models/Card");
 
 const authMiddleware = require("../../middleware/auth");
 
@@ -26,10 +27,9 @@ boards.get("/:boardId", (req, res) => {
   console.log("DEBUG: GET /api/boards/" + boardId);
   Board.findById(boardId)
     .populate("cards")
-    .then(board => res.json(board))
-    .catch(err => {
-      console.log(err);
-      res.status(404).json({ msg: "No board with such id" });
+    .then(board => {
+      if (!board) return res.status(404).json({ msg: "No board with such id" });
+      res.json(board);
     });
 });
 
@@ -63,11 +63,38 @@ boards.post("/", authMiddleware, (req, res) => {
 
 // @route DELETE /api/boards/:boardId
 // @desc Deleate a Board
-// @access Public
-boards.delete("/:boardId", (req, res) => {
+// @access Private
+boards.delete("/:boardId", authMiddleware, (req, res) => {
   const boardId = req.params.boardId;
   console.log("DEBUG: DELETE /api/boards/" + boardId);
-  res.send("ok");
+
+  const { id } = req.user;
+
+  Board.findById(boardId)
+    .then(board => {
+      if (board.userId.toString() !== id)
+        return res.status(403).json({
+          msg: "Your auth token does not correspond to the board's author",
+        });
+
+      User.findById(id).then(user => {
+        if (!user)
+          return res.status(404).json({
+            msg:
+              "User in yout token does not correspond to any user in the database",
+          });
+
+        user.boards = user.boards.filter(
+          foundBoardId => foundBoardId.toString() !== board._id.toString()
+        );
+        user.save();
+      });
+
+      Card.deleteMany({ boardId: board._id }).then();
+
+      board.remove().then(() => res.json({ success: true }));
+    })
+    .catch(() => res.status(404).json({ success: false }));
 });
 
 module.exports = boards;

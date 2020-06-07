@@ -5,6 +5,7 @@ import { BoardContext, AuthContext } from "..";
 import {
   fetchBoard,
   addBoard,
+  deleteBoard,
   addCard,
   updateCard,
   deleteCard,
@@ -41,6 +42,9 @@ function BoardProvider(props) {
         },
         addBoard: board => {
           addBoard(dispatch, board, loadUser);
+        },
+        deleteBoard: boardId => {
+          deleteBoard(dispatch, boardId, loadUser);
         },
         addCard: card => {
           addCard(dispatch, state.board._id, card);

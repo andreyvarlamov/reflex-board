@@ -3,12 +3,13 @@ import axios from "axios";
 import {
   GET_BOARD,
   BOARD_LOADING,
+  ADD_BOARD,
+  DELETE_BOARD,
   ADD_CARD,
   UPDATE_CARD,
   ADD_CARD_LOCAL,
   UPDATE_CARD_LOCAL,
   DELETE_CARD,
-  ADD_BOARD,
 } from ".";
 
 //TEMP
@@ -32,6 +33,15 @@ export const addBoard = (dispatch, board, loadUser) => {
       loadUser();
     })
     .catch(err => console.log("ERR: " + err));
+};
+
+export const deleteBoard = (dispatch, boardId, loadUser) => {
+  axios.delete("/api/boards/" + boardId, tokenConfig()).then(res => {
+    if (res.data.success) {
+      dispatch({ type: DELETE_BOARD, payload: boardId });
+      loadUser();
+    } else throw new Error("Error when deleting a board. Reload the page");
+  });
 };
 
 export const addCard = (dispatch, boardId, card) => {

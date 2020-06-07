@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { useLocation, Link } from "react-router-dom";
+import { useLocation, Link, useHistory } from "react-router-dom";
 
 import {
   AppBar,
@@ -35,7 +35,7 @@ const useStyles = makeStyles(theme => ({
 function ReflexNavbar() {
   const classes = useStyles();
 
-  const location = useLocation();
+  const history = useHistory();
 
   const { isAuthenticated, logout } = useContext(AuthContext);
 
@@ -54,7 +54,13 @@ function ReflexNavbar() {
             Reflex
           </Typography>
           {isAuthenticated ? (
-            <Button color="inherit" onClick={logout}>
+            <Button
+              color="inherit"
+              onClick={() => {
+                logout();
+                history.push("/");
+              }}
+            >
               Logout
             </Button>
           ) : (
