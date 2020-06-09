@@ -2,17 +2,14 @@ import React, { useContext, useEffect, useState } from "react";
 import {
   Typography,
   makeStyles,
-  Paper,
-  TextField,
   Button,
-  Input,
-  ClickAwayListener,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
 } from "@material-ui/core";
-import DeleteIcon from "@material-ui/icons/Delete";
+
+import BoardCard from "./BoardCard";
 
 import { AuthContext, BoardContext } from "../contexts";
 import { useHistory } from "react-router-dom";
@@ -38,100 +35,7 @@ const useStyles = makeStyles(theme => ({
     flexDirection: "row",
     flexWrap: "wrap",
   },
-  boardCard: {
-    width: "150px",
-    minHeight: "150px",
-    padding: "1.5rem",
-    margin: "0.5rem 0.5rem",
-    borderRadius: "5px",
-    display: "flex",
-    "&:hover": {
-      background: theme.palette.reflexGrey.light,
-      cursor: "pointer",
-    },
-    position: "relative",
-  },
-  boardDetailText: {
-    width: "100%",
-    flexGrow: "1",
-    textAlign: "center",
-    margin: "auto",
-    overflowWrap: "break-word",
-  },
-  newBoardInput: {
-    textAlign: "center",
-  },
-  deleteButton: {
-    position: "absolute",
-    bottom: "5px",
-    right: "5px",
-    color: "#AAAAAA",
-    "&:hover": {
-      padding: "3px",
-      color: "#505050",
-      backgroundColor: "#AAAAAA",
-      borderRadius: "50%",
-    },
-  },
 }));
-
-function BoardCard(props) {
-  const classes = useStyles();
-
-  const { newBoard } = props;
-
-  const NewBoardCard = () => {
-    const [title, setTitle] = useState("");
-
-    const { addBoard } = useContext(BoardContext);
-
-    const submitForm = () => {
-      if (title) addBoard({ title });
-    };
-
-    return (
-      <ClickAwayListener
-        onClickAway={submitForm}
-        mouseEvent="onMouseDown"
-        touchEvent="onTouchStart"
-      >
-        <Paper className={classes.boardCard} onClick={props.onClick}>
-          <Input
-            classes={{ input: classes.newBoardInput }}
-            multiline
-            disableUnderline
-            placeholder={"+ Add board"}
-            onKeyPress={e => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                submitForm();
-              }
-            }}
-            onChange={e => setTitle(e.target.value)}
-            value={title}
-          ></Input>
-        </Paper>
-      </ClickAwayListener>
-    );
-  };
-
-  return newBoard ? (
-    <NewBoardCard />
-  ) : (
-    <Paper className={classes.boardCard} onClick={props.onClick}>
-      <DeleteIcon
-        className={classes.deleteButton}
-        onClick={e => {
-          e.stopPropagation();
-          props.onDelete();
-        }}
-      />
-      <Typography className={classes.boardDetailText} variant="subtitle1">
-        {props.title}
-      </Typography>
-    </Paper>
-  );
-}
 
 const ConfirmDeleteDialog = props => {
   const { open, handleClose } = props;
@@ -205,6 +109,7 @@ function UserDetail() {
                   setBoardToDelete(board._id);
                   setDialogOpen(true);
                 }}
+                canDelete
               />
             ))}
             <BoardCard newBoard />

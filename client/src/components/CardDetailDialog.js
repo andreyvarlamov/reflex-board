@@ -79,6 +79,11 @@ const useStyles = makeStyles(theme => ({
     marginBottom: "0.7rem",
     fontWeight: "bold",
   },
+  noDescriptionText: {
+    whiteSpace: "pre-wrap",
+    display: "inline",
+    color: "#888888",
+  },
   descriptionText: {
     whiteSpace: "pre-wrap",
     display: "inline",
@@ -99,6 +104,11 @@ const useStyles = makeStyles(theme => ({
       cursor: "pointer",
       textDecoration: "underline",
     },
+  },
+  statusTextNoAuth: {
+    fontStyle: "italic",
+    color: theme.palette.info.main,
+    display: "inline",
   },
   statusTextWrapper: {
     marginTop: "0.5rem",
@@ -129,7 +139,7 @@ function CardDetailDialog(props) {
 
   const { board, updateCard, deleteCard } = useContext(BoardContext);
 
-  const { open, handleClose, cardId } = props;
+  const { open, handleClose, cardId, authToEdit } = props;
 
   const initialCardEditing = {
     title: false,
@@ -159,7 +169,7 @@ function CardDetailDialog(props) {
       setJustOpened(false);
     }
     if (editingDone) {
-      updateCard(cardData);
+      if (authToEdit) updateCard(cardData);
       setCardEditing({
         title: false,
         description: false,
@@ -249,7 +259,7 @@ function CardDetailDialog(props) {
 
         <DialogContent className={`${classes.dialogContent} draggableCancel`}>
           {/* Title  ----------------------------------------------------------------------------- */}
-          {cardEditing.title ? (
+          {cardEditing.title && authToEdit ? (
             cardInput(cardData.title, classes.titleInput, true, "title")
           ) : (
             <Typography
@@ -261,7 +271,7 @@ function CardDetailDialog(props) {
           )}
 
           {/* Status ----------------------------------------------------------------------------- */}
-          {cardEditing.status ? (
+          {cardEditing.status && authToEdit ? (
             <ClickAwayListener
               onClickAway={handleCardSave}
               mouseEvent="onMouseDown"
@@ -294,7 +304,9 @@ function CardDetailDialog(props) {
           ) : (
             <div className={classes.statusTextWrapper}>
               <Typography
-                className={classes.statusText}
+                className={
+                  authToEdit ? classes.statusText : classes.statusTextNoAuth
+                }
                 variant="subtitle1"
                 onClick={() => {
                   setCardEditing(prev => ({ ...prev, status: true }));
@@ -309,7 +321,7 @@ function CardDetailDialog(props) {
           <Typography className={classes.descriptionLabel} variant="h6">
             Description
           </Typography>
-          {cardEditing.description ? (
+          {cardEditing.description && authToEdit ? (
             cardInput(
               cardData.description,
               classes.descriptionInput,
@@ -331,31 +343,39 @@ function CardDetailDialog(props) {
           )}
           {/* Show fake input if description is empty */}
           {!cardData.description && !cardEditing.description ? (
-            <Input
-              disableUnderline
-              fullWidth
-              placeholder="Add a description..."
-              multiline
-              rows="3"
-              onClick={() =>
-                setCardEditing(prev => ({ ...prev, description: true }))
-              }
-              classes={{
-                input: classes.descriptionInput,
-              }}
-            ></Input>
+            authToEdit ? (
+              <Input
+                disableUnderline
+                fullWidth
+                placeholder="Add a description..."
+                multiline
+                rows="3"
+                onClick={() =>
+                  setCardEditing(prev => ({ ...prev, description: true }))
+                }
+                classes={{
+                  input: classes.descriptionInput,
+                }}
+              ></Input>
+            ) : (
+              <Typography className={classes.noDescriptionText} variant="body1">
+                No Description
+              </Typography>
+            )
           ) : null}
           {/* Delete Button */}
-          <Button
-            onClick={() => {
-              deleteCard(cardData._id);
-              closeDialog();
-            }}
-            className={classes.deleteButton}
-            variant="contained"
-          >
-            &times; Delete Card
-          </Button>
+          {authToEdit ? (
+            <Button
+              onClick={() => {
+                deleteCard(cardData._id);
+                closeDialog();
+              }}
+              className={classes.deleteButton}
+              variant="contained"
+            >
+              &times; Delete Card
+            </Button>
+          ) : null}
         </DialogContent>
 
         <DialogActions className={`${classes.dialogActions} draggableHandle`}>

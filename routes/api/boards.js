@@ -12,6 +12,7 @@ const authMiddleware = require("../../middleware/auth");
 boards.get("/", (req, res) => {
   console.log("DEBUG: GET /api/boards");
   Board.find()
+    .populate("userId", "firstName lastName")
     .then(boards => res.json(boards))
     .catch(err => {
       console.log(err);

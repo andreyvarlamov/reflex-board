@@ -4,6 +4,8 @@ const comments = require("./comments");
 const Card = require("../../models/Card");
 const Board = require("../../models/Board");
 
+const authMiddleware = require("../../middleware/auth");
+
 // @route GET /api/cards/
 // @desc Get All Cards
 // @access Public
@@ -16,13 +18,18 @@ cards.get("/", (req, res) => {
 
 // @route POST /api/cards
 // @desc Add a New Card
-// @access Public
-cards.post("/", (req, res) => {
+// @access Private
+cards.post("/", authMiddleware, (req, res) => {
   console.log("DEBUG: POST /api/cards/");
 
   const { boardId } = req.body;
+  const { id } = req.user;
+
   Board.findById(boardId)
     .then(board => {
+      if (id !== board.userId.toString())
+        return res.status(401).json({ msg: "Not authorized to add this card" });
+
       const { title, status, author, description } = req.body;
       const newCard = new Card({ title, status, author, description, boardId });
 
@@ -45,47 +52,66 @@ cards.post("/", (req, res) => {
 
 // @route PATCH /api/cards/:cardId
 // @desc Update a Card
-// @access Public
-cards.patch("/:cardId", (req, res) => {
+// @access Private
+cards.patch("/:cardId", authMiddleware, (req, res) => {
   const cardId = req.params.cardId;
   console.log("DEBUG: PATCH /api/cards/" + cardId);
+
+  const userId = req.user.id;
 
   const newCard = req.body;
   delete newCard._id;
 
-  Card.updateOne({ _id: cardId }, newCard)
-    .then(() => {
-      Card.findById(cardId).then(card => {
-        if (card) return res.json(card);
-        else return res.status(400).json({ msg: "No such card id: " + cardId });
-      });
-    })
-    .catch(err => console.log(err));
+  Card.findById(cardId).then(card => {
+    const { boardId } = card;
+
+    Board.findById(boardId).then(board => {
+      if (userId !== board.userId.toString())
+        return res
+          .status(401)
+          .json({ msg: "Not authorized to edit this card" });
+
+      Card.updateOne({ _id: cardId }, newCard)
+        .then(() => {
+          Card.findById(cardId).then(card => {
+            if (card) return res.json(card);
+            else
+              return res
+                .status(400)
+                .json({ msg: "No such card id: " + cardId });
+          });
+        })
+        .catch(err => console.log(err));
+    });
+  });
 });
 
 // @route DELETE /api/cards/:cardId
 // @desc Delete a Card
-// @access Public
-cards.delete("/:cardId", (req, res) => {
+// @access Private
+cards.delete("/:cardId", authMiddleware, (req, res) => {
   const cardId = req.params.cardId;
   console.log("DEBUG: DELETE /api/cards/" + cardId);
 
+  const userId = req.user.id;
+
   Card.findById(cardId)
     .then(card => {
-      Board.findById(card.boardId)
-        .then(board => {
-          board.cards = board.cards.filter(
-            foundCardId => foundCardId.toString() !== cardId
-          );
-          board.save();
-        })
-        .catch(err => console.log(err));
+      Board.findById(card.boardId).then(board => {
+        if (userId !== board.userId.toString())
+          return res
+            .status(401)
+            .json({ msg: "Not authorized to edit this card" });
 
-      card.remove().then(() => res.json({ success: true }));
+        board.cards = board.cards.filter(
+          foundCardId => foundCardId.toString() !== cardId
+        );
+        board.save();
+
+        card.remove().then(() => res.json({ success: true }));
+      });
     })
     .catch(err => res.status(404).json({ success: false }));
-
-  Card.deleteOne({ _id: cardId });
 });
 
 // redirect /api/cards/:cardId/comments

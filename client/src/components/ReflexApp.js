@@ -14,6 +14,7 @@ import Register from "./Register";
 import UserDetail from "./UserDetail";
 
 import { AuthContext } from "../contexts";
+import AllBoardsList from "./AllBoardsList";
 
 function ReflexApp() {
   const { isAuthenticated } = useContext(AuthContext);
@@ -31,10 +32,13 @@ function ReflexApp() {
         <Route path="/board/:boardId">
           <ReflexBoardCanvas />
         </Route>
+        <Route path="/boards">
+          <AllBoardsList />
+        </Route>
         <Route path="/">
           {isAuthenticated ? <UserDetail /> : null}
-          {/* Separated 2 cases, so that login doesn't show up if isAuthenticated is null (not loaded yet) */}
-          {isAuthenticated === false ? <Login /> : null}
+          {/* Separated 2 cases, so that all boards list doesn't show up if isAuthenticated is null (not loaded yet) */}
+          {isAuthenticated === false ? <AllBoardsList /> : null}
         </Route>
       </Switch>
     </Router>

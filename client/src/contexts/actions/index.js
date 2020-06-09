@@ -1,6 +1,8 @@
 // BOARD TYPES
 export const GET_BOARD = "GET_BOARD";
 export const BOARD_LOADING = "BOARD_LOADING";
+export const GET_ALL_BOARDS = "GET_ALL_BOARDS";
+export const ALL_BOARDS_LOADING = "ALL_BOARDS_LOADING";
 export const ADD_BOARD = "ADD_BOARD";
 export const DELETE_BOARD = "DELETE_BOARD";
 export const UPDATE_BOARD = "UPDATE_BOARD";

@@ -85,14 +85,14 @@ function ReflexBoardCanvas() {
 
   // Contexts
   const { board, loading, fetchBoard, updateBoard } = useContext(BoardContext);
-  const { loadUser } = useContext(AuthContext);
-
+  const { isAuthenticated, user } = useContext(AuthContext);
   // States
   const [editing, setEditing] = useState(-1);
   const [detailOpen, setDetailOpen] = useState(false);
   const [chosenCardId, setChosenCardId] = useState("");
   const [confirmDelStatusOpen, setConfirmDelStatusOpen] = useState(false);
   const [statusToDelete, setStatusToDelete] = useState("");
+  const [authToEdit, setAuthToEdit] = useState(false);
 
   // Router Params
   const { boardId } = useParams();
@@ -101,6 +101,11 @@ function ReflexBoardCanvas() {
     console.log("DEBUG: Fetching Board");
     if (boardId !== "") fetchBoard(boardId);
   }, [boardId]);
+
+  useEffect(() => {
+    if (user && board)
+      setAuthToEdit(isAuthenticated && user._id === board.userId);
+  }, [isAuthenticated, user, board]);
 
   // Inner components
   const newCardComponent = status => (
@@ -206,6 +211,7 @@ function ReflexBoardCanvas() {
               setChosenCardId("");
             }}
             cardId={chosenCardId}
+            authToEdit={authToEdit}
           />
 
           <Typography variant="h4" className={classes.boardTitle}>
@@ -215,16 +221,18 @@ function ReflexBoardCanvas() {
             {board.statusDictionary.map((status, column) => (
               <div key={uuid()} className={classes.cardsColumn}>
                 <div className={classes.columnCardsContainer}>
-                  <DeleteIcon
-                    className={classes.deleteButton}
-                    onClick={e => {
-                      e.stopPropagation();
+                  {authToEdit ? (
+                    <DeleteIcon
+                      className={classes.deleteButton}
+                      onClick={e => {
+                        e.stopPropagation();
 
-                      setStatusToDelete(status);
+                        setStatusToDelete(status);
 
-                      setConfirmDelStatusOpen(true);
-                    }}
-                  />
+                        setConfirmDelStatusOpen(true);
+                      }}
+                    />
+                  ) : null}
                   <Typography variant="h6" className={classes.columnTitle}>
                     {status}
                   </Typography>
@@ -240,12 +248,14 @@ function ReflexBoardCanvas() {
                     ))}
                   {editing === column ? newCardComponent(status) : null}
                   {editing !== column
-                    ? addButtonComponent(column)
+                    ? authToEdit
+                      ? addButtonComponent(column)
+                      : null
                     : cancelButtonComponent()}
                 </div>
               </div>
             ))}
-            <NewStatusColumn />
+            {authToEdit ? <NewStatusColumn /> : null}
           </div>
         </React.Fragment>
       )}

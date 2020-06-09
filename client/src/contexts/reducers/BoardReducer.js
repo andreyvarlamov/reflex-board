@@ -9,6 +9,8 @@ import {
   ADD_CARD_LOCAL,
   UPDATE_CARD_LOCAL,
   DELETE_CARD,
+  GET_ALL_BOARDS,
+  ALL_BOARDS_LOADING,
 } from "../actions";
 
 const updateCards = (prevCards, updatedCard) => {
@@ -34,6 +36,17 @@ export default (state, action) => {
       return {
         ...state,
         loading: true,
+      };
+    case GET_ALL_BOARDS:
+      return {
+        ...state,
+        allBoards: action.payload,
+        allBoardsLoading: false,
+      };
+    case ALL_BOARDS_LOADING:
+      return {
+        ...state,
+        allBoardsLoading: true,
       };
     case ADD_BOARD:
       return {

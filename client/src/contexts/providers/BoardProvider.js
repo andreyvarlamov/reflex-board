@@ -10,6 +10,7 @@ import {
   addCard,
   updateCard,
   deleteCard,
+  fetchAllBoards,
 } from "../actions/boardActions";
 
 import BoardReducer from "../reducers/boardReducer";
@@ -18,6 +19,8 @@ const initialState = {
   board: {},
   prevBoard: {},
   loading: true,
+  allBoards: [],
+  allBoardsLoading: true,
 };
 
 function BoardProvider(props) {
@@ -25,21 +28,18 @@ function BoardProvider(props) {
 
   const { loadUser } = useContext(AuthContext);
 
-  // const [once, setOnce] = useState(true);
-  // useEffect(() => {
-  //   if (once) {
-  //     fetchBoard(dispatch);
-  //     setOnce(false);
-  //   }
-  // }, [once, state]);
-
   return (
     <BoardContext.Provider
       value={{
         board: state.board,
         loading: state.loading,
+        allBoards: state.allBoards,
+        allBoardsLoading: state.allBoardsLoading,
         fetchBoard: boardId => {
           fetchBoard(dispatch, boardId);
+        },
+        fetchAllBoards: () => {
+          fetchAllBoards(dispatch);
         },
         addBoard: board => {
           addBoard(dispatch, board, loadUser);
