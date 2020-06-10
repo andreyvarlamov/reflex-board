@@ -30,6 +30,10 @@ const useStyles = makeStyles(theme => ({
     textDecoration: "none",
     color: theme.palette.text.primary,
   },
+  titleLinkStyle: {
+    textDecoration: "none",
+    color: theme.palette.text.primary,
+  },
 }));
 
 function ReflexNavbar() {
@@ -51,18 +55,28 @@ function ReflexNavbar() {
             />
           </Link>
           <Typography variant="h6" className={classes.title}>
-            Reflex
+            <Link to="/" className={classes.titleLinkStyle}>
+              Reflex
+            </Link>
           </Typography>
+          <Link to="/boards" className={classes.loginLink}>
+            <Button color="inherit">All Boards</Button>
+          </Link>
           {isAuthenticated ? (
-            <Button
-              color="inherit"
-              onClick={() => {
-                logout();
-                history.push("/");
-              }}
-            >
-              Logout
-            </Button>
+            <React.Fragment>
+              <Link to="/" className={classes.loginLink}>
+                <Button color="inherit">My Boards</Button>
+              </Link>
+              <Button
+                color="inherit"
+                onClick={() => {
+                  logout();
+                  history.push("/");
+                }}
+              >
+                Logout
+              </Button>
+            </React.Fragment>
           ) : (
             <Link to="/login" className={classes.loginLink}>
               <Button color="inherit">Login</Button>

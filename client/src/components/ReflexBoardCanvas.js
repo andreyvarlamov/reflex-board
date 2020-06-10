@@ -11,6 +11,7 @@ import {
   DialogActions,
   DialogTitle,
   DialogContent,
+  CircularProgress,
 } from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
 
@@ -22,20 +23,25 @@ import { BoardContext, AuthContext } from "../contexts";
 import { useParams } from "react-router-dom";
 
 const useStyles = makeStyles(theme => ({
-  // boardCanvas: {
-  //   position: "relative",
-  //   // flexGrow: 1,
-  // },
+  outerWrapper: {
+    flexGrow: "1",
+    display: "flex",
+    flexDirection: "column",
+  },
+  cardsContainerWrapper: {
+    position: "relative",
+    flexGrow: "1",
+  },
   cardsContainer: {
     display: "flex",
     flexDirection: "row",
     margin: "1rem 0 0 0",
     overflow: "auto",
-    // position: "absolute",
-    // top: "0",
-    // bottom: "0",
-    // left: "0",
-    // right: "0",
+    position: "absolute",
+    top: "0",
+    bottom: "0",
+    left: "0",
+    right: "0",
   },
   cardsColumn: {
     minWidth: "280px",
@@ -77,6 +83,10 @@ const useStyles = makeStyles(theme => ({
       backgroundColor: "#AAAAAA",
       borderRadius: "50%",
     },
+  },
+  circularProgress: {
+    color: "#505050",
+    margin: "auto",
   },
 }));
 
@@ -197,7 +207,7 @@ function ReflexBoardCanvas() {
   return (
     <React.Fragment>
       {loading ? (
-        <Typography>Loading...</Typography>
+        <CircularProgress className={classes.circularProgress} />
       ) : (
         <React.Fragment>
           <ConfirmDeleteStatusDialog
@@ -213,49 +223,52 @@ function ReflexBoardCanvas() {
             cardId={chosenCardId}
             authToEdit={authToEdit}
           />
+          <div className={classes.outerWrapper}>
+            <Typography variant="h4" className={classes.boardTitle}>
+              {board.title}
+            </Typography>
+            <div className={classes.cardsContainerWrapper}>
+              <div className={classes.cardsContainer}>
+                {board.statusDictionary.map((status, column) => (
+                  <div key={uuid()} className={classes.cardsColumn}>
+                    <div className={classes.columnCardsContainer}>
+                      {authToEdit ? (
+                        <DeleteIcon
+                          className={classes.deleteButton}
+                          onClick={e => {
+                            e.stopPropagation();
 
-          <Typography variant="h4" className={classes.boardTitle}>
-            {board.title}
-          </Typography>
-          <div className={classes.cardsContainer}>
-            {board.statusDictionary.map((status, column) => (
-              <div key={uuid()} className={classes.cardsColumn}>
-                <div className={classes.columnCardsContainer}>
-                  {authToEdit ? (
-                    <DeleteIcon
-                      className={classes.deleteButton}
-                      onClick={e => {
-                        e.stopPropagation();
+                            setStatusToDelete(status);
 
-                        setStatusToDelete(status);
-
-                        setConfirmDelStatusOpen(true);
-                      }}
-                    />
-                  ) : null}
-                  <Typography variant="h6" className={classes.columnTitle}>
-                    {status}
-                  </Typography>
-                  {board.cards
-                    .filter(card => card.status === status)
-                    .map((card, index) => (
-                      <div key={uuid()} className={classes.cardItem}>
-                        <ReflexCard
-                          card={card}
-                          handleCardClick={handleCardClick}
+                            setConfirmDelStatusOpen(true);
+                          }}
                         />
-                      </div>
-                    ))}
-                  {editing === column ? newCardComponent(status) : null}
-                  {editing !== column
-                    ? authToEdit
-                      ? addButtonComponent(column)
-                      : null
-                    : cancelButtonComponent()}
-                </div>
+                      ) : null}
+                      <Typography variant="h6" className={classes.columnTitle}>
+                        {status}
+                      </Typography>
+                      {board.cards
+                        .filter(card => card.status === status)
+                        .map((card, index) => (
+                          <div key={uuid()} className={classes.cardItem}>
+                            <ReflexCard
+                              card={card}
+                              handleCardClick={handleCardClick}
+                            />
+                          </div>
+                        ))}
+                      {editing === column ? newCardComponent(status) : null}
+                      {editing !== column
+                        ? authToEdit
+                          ? addButtonComponent(column)
+                          : null
+                        : cancelButtonComponent()}
+                    </div>
+                  </div>
+                ))}
+                {authToEdit ? <NewStatusColumn /> : null}
               </div>
-            ))}
-            {authToEdit ? <NewStatusColumn /> : null}
+            </div>
           </div>
         </React.Fragment>
       )}

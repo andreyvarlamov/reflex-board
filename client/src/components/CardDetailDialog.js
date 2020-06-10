@@ -39,6 +39,7 @@ const useStyles = makeStyles(theme => ({
   },
   dialogContent: {
     paddingTop: "20px",
+    paddingBottom: "50px",
     position: "relative",
   },
   dialogActions: {
@@ -119,7 +120,7 @@ const useStyles = makeStyles(theme => ({
     color: theme.palette.reflexGrey.light,
     position: "absolute",
     bottom: "0.2rem",
-    right: "1rem",
+    right: "24px",
   },
 }));
 

@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 
-import { Typography, makeStyles } from "@material-ui/core";
+import { Typography, makeStyles, CircularProgress } from "@material-ui/core";
 
 import { BoardContext } from "../contexts";
 import BoardCard from "./BoardCard";
@@ -17,6 +17,10 @@ const useStyles = makeStyles(theme => ({
     display: "flex",
     flexDirection: "row",
     flexWrap: "wrap",
+  },
+  circularProgress: {
+    color: "#505050",
+    margin: "auto",
   },
 }));
 
@@ -42,7 +46,7 @@ function AllBoardsList() {
   return (
     <React.Fragment>
       {allBoardsLoading ? (
-        <Typography>Loading...</Typography>
+        <CircularProgress className={classes.circularProgress} />
       ) : (
         <React.Fragment>
           <Typography variant="h5" className={classes.h5Label}>

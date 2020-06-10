@@ -13,6 +13,8 @@ import AuthProvider from "./contexts/providers/AuthProvider";
 // components
 import ReflexApp from "./components/ReflexApp";
 
+import "./App.css";
+
 function App() {
   return (
     <div className="App">
