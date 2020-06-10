@@ -33,5 +33,8 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.9.14",
     "validator": "^13.0.0"
+  },
+  "engines": {
+    "node": "12.16.x"
   }
 }
