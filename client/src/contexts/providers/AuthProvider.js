@@ -1,5 +1,4 @@
 import React, { useReducer, useEffect, useState, useContext } from "react";
-import axios from "axios";
 
 import { AuthContext, ErrorContext } from "..";
 
@@ -24,6 +23,7 @@ function AuthProvider(props) {
       loadUser(dispatch, returnErrors);
       setOnce(false);
     }
+    // eslint-disable-next-line
   }, [once]);
 
   return (

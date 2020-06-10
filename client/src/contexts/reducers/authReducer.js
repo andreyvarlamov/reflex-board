@@ -10,8 +10,8 @@ import {
 } from "../actions";
 
 export default (state, action) => {
-  console.log("DEBUG: Auth Reducer action type - " + action.type);
-  console.log(action);
+  // console.log("DEBUG: Auth Reducer action type - " + action.type);
+  // console.log(action);
   switch (action.type) {
     case USER_LOADING:
       return {

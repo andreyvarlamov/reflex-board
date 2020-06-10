@@ -10,7 +10,7 @@ const authMiddleware = require("../../middleware/auth");
 // @desc Get All Cards
 // @access Public
 cards.get("/", (req, res) => {
-  console.log("DEBUG: GET /api/cards/");
+  // console.log("DEBUG: GET /api/cards/");
   Card.find()
     .then(cards => res.json(cards))
     .catch(err => console.log(err));
@@ -20,7 +20,7 @@ cards.get("/", (req, res) => {
 // @desc Add a New Card
 // @access Private
 cards.post("/", authMiddleware, (req, res) => {
-  console.log("DEBUG: POST /api/cards/");
+  // console.log("DEBUG: POST /api/cards/");
 
   const { boardId } = req.body;
   const { id } = req.user;
@@ -55,7 +55,7 @@ cards.post("/", authMiddleware, (req, res) => {
 // @access Private
 cards.patch("/:cardId", authMiddleware, (req, res) => {
   const cardId = req.params.cardId;
-  console.log("DEBUG: PATCH /api/cards/" + cardId);
+  // console.log("DEBUG: PATCH /api/cards/" + cardId);
 
   const userId = req.user.id;
 
@@ -91,7 +91,7 @@ cards.patch("/:cardId", authMiddleware, (req, res) => {
 // @access Private
 cards.delete("/:cardId", authMiddleware, (req, res) => {
   const cardId = req.params.cardId;
-  console.log("DEBUG: DELETE /api/cards/" + cardId);
+  // console.log("DEBUG: DELETE /api/cards/" + cardId);
 
   const userId = req.user.id;
 

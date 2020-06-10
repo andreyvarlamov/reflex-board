@@ -13,7 +13,7 @@ const jwtSecret = process.env.JWT_SECRET;
 // @desc Get all users
 // @access Public
 users.get("/", (req, res) => {
-  console.log("DEBUG: GET /api/users");
+  // console.log("DEBUG: GET /api/users");
   User.find()
     .populate("boards", "title")
     .then(users => res.json(users))
@@ -27,7 +27,7 @@ users.get("/", (req, res) => {
 // @desc Create a new user
 // @access Public
 users.post("/", (req, res) => {
-  console.log("DEBUG: POST /api/users");
+  // console.log("DEBUG: POST /api/users");
   const { firstName, lastName, email, password } = req.body;
 
   const { msg, isValid, emailValid } = validateRegisterInput(req.body);

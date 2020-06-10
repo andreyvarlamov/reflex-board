@@ -14,7 +14,7 @@ const authMiddleware = require("../../middleware/auth");
 // @desc Authenticate a user
 // @access Public
 auth.post("/", (req, res) => {
-  console.log("DEBUG: POST /api/auth");
+  // console.log("DEBUG: POST /api/auth");
   const { email, password } = req.body;
 
   const { msg, isValid, emailValid } = validateLoginInput(req.body);

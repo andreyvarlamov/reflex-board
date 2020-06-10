@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { useLocation, Link, useHistory } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 
 import {
   AppBar,

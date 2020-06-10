@@ -78,6 +78,7 @@ function UserDetail() {
 
   useEffect(() => {
     if (boardId !== "") history.push("/board/" + boardId);
+    // eslint-disable-next-line
   }, [boardId]);
 
   return (

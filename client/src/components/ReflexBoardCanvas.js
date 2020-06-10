@@ -108,8 +108,9 @@ function ReflexBoardCanvas() {
   const { boardId } = useParams();
 
   useEffect(() => {
-    console.log("DEBUG: Fetching Board");
+    // console.log("DEBUG: Fetching Board");
     if (boardId !== "") fetchBoard(boardId);
+    // eslint-disable-next-line
   }, [boardId]);
 
   useEffect(() => {

@@ -1,10 +1,5 @@
 import React, { useContext } from "react";
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Index,
-} from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 // components
 import ReflexNavbar from "./ReflexNavbar";

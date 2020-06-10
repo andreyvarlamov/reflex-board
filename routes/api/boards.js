@@ -10,7 +10,7 @@ const authMiddleware = require("../../middleware/auth");
 // @desc Get All Boards
 // @access Public
 boards.get("/", (req, res) => {
-  console.log("DEBUG: GET /api/boards");
+  // console.log("DEBUG: GET /api/boards");
   Board.find()
     .populate("userId", "firstName lastName")
     .then(boards => res.json(boards))
@@ -25,7 +25,7 @@ boards.get("/", (req, res) => {
 // @access Public
 boards.get("/:boardId", (req, res) => {
   const boardId = req.params.boardId;
-  console.log("DEBUG: GET /api/boards/" + boardId);
+  // console.log("DEBUG: GET /api/boards/" + boardId);
   Board.findById(boardId)
     .populate("cards")
     .then(board => {
@@ -38,7 +38,7 @@ boards.get("/:boardId", (req, res) => {
 // @desc Add a New Board
 // @access Private
 boards.post("/", authMiddleware, (req, res) => {
-  console.log("DEBUG: POST /api/boards");
+  // console.log("DEBUG: POST /api/boards");
   const { title } = req.body;
   const { id } = req.user;
 
@@ -67,7 +67,7 @@ boards.post("/", authMiddleware, (req, res) => {
 // @access Private
 boards.patch("/:boardId", authMiddleware, (req, res) => {
   const boardId = req.params.boardId;
-  console.log("DEBUG: PATCH /api/boards/" + boardId);
+  // console.log("DEBUG: PATCH /api/boards/" + boardId);
 
   const { id } = req.user;
 
@@ -150,7 +150,7 @@ boards.patch("/:boardId", authMiddleware, (req, res) => {
 // @access Private
 boards.delete("/:boardId", authMiddleware, (req, res) => {
   const boardId = req.params.boardId;
-  console.log("DEBUG: DELETE /api/boards/" + boardId);
+  // console.log("DEBUG: DELETE /api/boards/" + boardId);
 
   const { id } = req.user;
 

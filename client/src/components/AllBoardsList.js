@@ -37,10 +37,12 @@ function AllBoardsList() {
 
   useEffect(() => {
     fetchAllBoards();
+    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
     if (boardId !== "") history.push("/board/" + boardId);
+    // eslint-disable-next-line
   }, [boardId]);
 
   return (
